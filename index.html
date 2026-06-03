@@ -1,0 +1,674 @@
+<!--
+  Empower AI Field Engineer — Stage 1 (v0.2)
+  Data Collection + Recommendation Tool
+  Adds: per-system support (multi-zone homes) + AI photo extraction of nameplate data.
+  Single self-contained file. Mobile-first. Auto-saves.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+  :root{
+    --bg:#e6e3da; --paper:#faf9f5; --ink:#16160f; --muted:#6f6c61; --line:#d2cec2; --line-strong:#b6b1a2;
+    --accent:#d6451f; --accent-dk:#a8330f; --cool:#1c66c9; --cool-dk:#0f4894;
+    --good:#3a7d44; --warn:#c0810f; --chrome:#16160f; --radius:4px;
+    --shadow:0 1px 0 var(--line-strong), 0 8px 24px -16px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;}
+  body{min-height:100vh;background-image:
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(0,0,0,.018) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(0,0,0,.018) 39px 40px);}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+  header{position:sticky;top:0;z-index:30;background:var(--chrome);color:#f3f1e8;
+    padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--accent);}
+  header .badge{width:30px;height:30px;border:1.5px solid var(--accent);border-radius:3px;display:grid;place-items:center;
+    font-family:'Archivo';font-weight:900;font-size:15px;color:var(--accent);flex:0 0 auto;}
+  header .ttl{font-family:'Archivo';font-weight:800;letter-spacing:.04em;font-size:13px;line-height:1.1;text-transform:uppercase;}
+  header .sub{font-size:9.5px;color:#9b988c;letter-spacing:.22em;text-transform:uppercase;}
+  header .right{margin-left:auto;font-size:9.5px;letter-spacing:.18em;color:#807d72;text-transform:uppercase;}
+  main{flex:1;padding:16px 16px 120px;}
+  .btn{appearance:none;border:none;cursor:pointer;font-family:'Archivo';font-weight:700;letter-spacing:.03em;font-size:14px;
+    padding:15px 18px;border-radius:var(--radius);background:var(--ink);color:#faf9f5;width:100%;text-transform:uppercase;
+    transition:transform .08s ease, filter .15s ease;}
+  .btn:active{transform:translateY(1px) scale(.997);}
+  .btn.accent{background:var(--accent);} .btn.cool{background:var(--cool);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line-strong);}
+  .btn.sm{width:auto;font-size:12px;padding:10px 14px;} .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+  .hero{padding:6px 2px 18px;}
+  .hero h1{font-family:'Archivo';font-weight:900;font-size:30px;line-height:.98;letter-spacing:-.01em;}
+  .hero p{color:var(--muted);font-size:13px;margin-top:8px;max-width:40ch;}
+  .kicker{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.28em;color:var(--accent);text-transform:uppercase;margin-bottom:6px;}
+  .surveys{margin-top:20px;display:flex;flex-direction:column;gap:10px;}
+  .slist-h{display:flex;align-items:baseline;justify-content:space-between;margin:4px 2px 2px;}
+  .slist-h span{font-family:'Archivo';font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;}
+  .slist-h em{font-style:normal;color:var(--muted);font-size:11px;}
+  .srow{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;}
+  .srow:active{filter:brightness(.985);}
+  .srow .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .srow .nm{font-weight:600;font-size:14px;} .srow .meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .srow .chev{margin-left:auto;color:var(--line-strong);font-size:20px;}
+  .empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:13px;border:1.5px dashed var(--line-strong);border-radius:var(--radius);}
+  .prog{display:flex;gap:5px;margin-bottom:16px;}
+  .prog .seg{flex:1;height:4px;border-radius:2px;background:var(--line-strong);transition:background .25s;}
+  .prog .seg.on{background:var(--accent);}
+  .stepcap{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+  .steph{font-family:'Archivo';font-weight:800;font-size:22px;line-height:1.05;margin-bottom:16px;}
+  .field{margin-bottom:16px;}
+  .field > label{display:block;font-weight:600;font-size:13px;margin-bottom:7px;}
+  .field .hint{color:var(--muted);font-weight:400;font-size:11px;} .req{color:var(--accent);}
+  input[type=text],input[type=tel],input[type=number],textarea,select{width:100%;font-family:'IBM Plex Sans';font-size:16px;color:var(--ink);
+    background:#fff;border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:13px;outline:none;transition:border-color .15s, box-shadow .15s;}
+  input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(214,69,31,.13);}
+  textarea{min-height:74px;resize:vertical;line-height:1.4;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:'IBM Plex Sans';font-weight:600;font-size:13px;padding:11px 14px;border-radius:var(--radius);
+    border:1.5px solid var(--line-strong);background:#fff;cursor:pointer;color:var(--ink);transition:all .12s ease;}
+  .chip:active{transform:scale(.97);} .chip.on{background:var(--ink);color:#faf9f5;border-color:var(--ink);}
+  .invalid input,.invalid textarea,.invalid .chips{border-color:var(--accent);}
+  .errmsg{color:var(--accent);font-size:11px;margin-top:5px;display:none;} .invalid .errmsg{display:block;}
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:linear-gradient(transparent,var(--bg) 22%);
+    padding:14px 16px calc(env(safe-area-inset-bottom) + 14px);}
+  .nav .inner{max-width:520px;margin:0 auto;display:flex;gap:10px;}
+  .nav .inner .btn{flex:1;} .nav .inner .btn.back{flex:0 0 38%;}
+  .rev-sec{margin-bottom:14px;}
+  .secttl{font-family:'Archivo';font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:20px 2px 10px;color:var(--ink);}
+  .est{display:flex;gap:10px;margin-bottom:16px;}
+  .est .box{flex:1;background:var(--chrome);color:#faf9f5;border-radius:var(--radius);padding:13px;}
+  .est .box .lab{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9b988c;}
+  .est .box .num{font-family:'Archivo';font-weight:900;font-size:24px;margin-top:4px;line-height:1;}
+  .est .box .num small{font-size:11px;font-weight:600;color:#c9c5b8;}
+  .est .box.cool{background:var(--cool-dk);} .est .box.heat{background:var(--accent-dk);}
+  .tier{border:1.5px solid var(--line-strong);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;background:var(--paper);}
+  .tier .head{display:flex;align-items:center;gap:10px;padding:12px 14px;color:#faf9f5;}
+  .tier.good .head{background:#5a5a52;} .tier.better .head{background:var(--cool);} .tier.best .head{background:var(--accent);}
+  .tier .head .lvl{font-family:'Archivo';font-weight:900;font-size:15px;letter-spacing:.05em;text-transform:uppercase;}
+  .tier .head .tag{margin-left:auto;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;opacity:.85;}
+  .tier .body{padding:12px 14px;}
+  .tier .spec{font-family:'IBM Plex Mono';font-size:13px;font-weight:600;margin-bottom:8px;}
+  .tier ul{list-style:none;}
+  .tier li{font-size:12.5px;color:#3d3a32;padding:3px 0 3px 16px;position:relative;}
+  .tier li:before{content:'';position:absolute;left:2px;top:9px;width:5px;height:5px;background:var(--ink);border-radius:1px;}
+  .flags{margin-top:8px;}
+  .flag{display:flex;gap:10px;padding:11px 13px;border-radius:var(--radius);margin-bottom:8px;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--muted);}
+  .flag.op{border-left-color:var(--cool);} .flag.risk{border-left-color:var(--accent);} .flag.iaq{border-left-color:var(--good);}
+  .flag .t{font-weight:700;font-size:13px;} .flag .n{font-size:12px;color:var(--muted);margin-top:2px;}
+  .flag .ic{font-family:'Archivo';font-weight:900;font-size:13px;flex:0 0 auto;width:20px;text-align:center;}
+  .note{font-size:11.5px;color:var(--muted);line-height:1.5;background:#fffdf6;border:1px dashed var(--line-strong);border-radius:var(--radius);padding:11px 13px;margin-top:14px;}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#faf9f5;padding:11px 18px;border-radius:var(--radius);font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:50;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  /* systems */
+  .syscard{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;margin-bottom:10px;}
+  .syscard .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .syscard .z{font-weight:700;font-size:14px;} .syscard .m{font-size:11px;color:var(--muted);margin-top:2px;}
+  .syscard .chev{margin-left:auto;color:var(--line-strong);font-size:20px;}
+  .syscard .del{margin-left:auto;color:var(--accent);font-family:'Archivo';font-weight:800;font-size:11px;letter-spacing:.08em;padding:8px;}
+  .addsys{width:100%;padding:14px;border:1.5px dashed var(--line-strong);border-radius:var(--radius);background:transparent;
+    font-family:'Archivo';font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:13px;color:var(--ink);cursor:pointer;}
+  .syshdr{font-family:'Archivo';font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:18px 2px 10px;}
+  /* photo / ai */
+  .photo-wrap{margin-bottom:16px;}
+  .photo-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+  .thumb{width:64px;height:64px;border-radius:var(--radius);object-fit:cover;border:1.5px solid var(--line-strong);position:relative;}
+  .thumbx{position:relative;}
+  .thumbx button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:var(--ink);color:#fff;font-size:12px;cursor:pointer;line-height:1;}
+  .addphoto{width:64px;height:64px;border:1.5px dashed var(--line-strong);border-radius:var(--radius);background:#fff;display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:24px;}
+  .addphoto input{display:none;}
+  .ai-panel{border:1.5px solid var(--cool);border-radius:var(--radius);background:#f3f7fd;padding:12px;margin-top:4px;}
+  .ai-panel .ah{display:flex;align-items:center;gap:8px;font-family:'Archivo';font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cool-dk);margin-bottom:8px;}
+  .ai-panel .conf{margin-left:auto;font-size:9.5px;padding:2px 7px;border-radius:10px;background:var(--cool);color:#fff;letter-spacing:.05em;}
+  .ai-panel .conf.low{background:var(--warn);} .ai-panel .conf.medium{background:var(--cool);} .ai-panel .conf.high{background:var(--good);}
+  .ai-panel .reason{font-size:11.5px;color:#3d3a32;line-height:1.45;}
+  .ai-panel .reason b{color:var(--ink);}
+  .rb{border:1px solid var(--line);border-left:4px solid var(--cool);border-radius:var(--radius);background:var(--paper);padding:11px 13px;margin-bottom:8px;}
+  .rb-h{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .rb-lv{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:var(--muted);color:#fff;font-weight:700;}
+  .rb-lv.federal{background:#3a5a8a;} .rb-lv.state{background:var(--cool);} .rb-lv.utility{background:var(--good);} .rb-lv.local{background:var(--warn);}
+  .rb-amt{margin-left:auto;font-family:'IBM Plex Mono';font-weight:600;font-size:13px;color:var(--accent-dk);}
+  .rb-name{font-weight:700;font-size:13px;} .rb-d{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;}
+  .rb-link{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:700;color:var(--cool-dk);text-decoration:none;letter-spacing:.03em;}
+  .spinner{width:16px;height:16px;border:2px solid rgba(28,102,201,.3);border-top-color:var(--cool);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .iconbtn{background:none;border:none;color:inherit;cursor:pointer;font-family:'Archivo';font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:6px;}
+</style>
+
+<div class="app">
+  <header>
+    <div class="badge">FE</div>
+    <div><div class="ttl">Field Engineer</div><div class="sub">Stage 1 · Survey + Rec</div></div>
+    <div class="right" id="hdrRight">v0.2</div>
+  </header>
+  <main id="view"></main>
+</div>
+<div class="nav" id="nav" style="display:none;"><div class="inner" id="navInner"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================== STORAGE ============================== */
+const STORE_KEY='fieldeng_surveys_v2';
+const BACKEND_KEY='fieldeng_backend_url';
+const BACKTOK_KEY='fieldeng_backend_token';
+let backendURL='/api/lookup', backendToken='';
+async function loadBackend(){
+  try{ const r=await window.storage.get(BACKEND_KEY); if(r&&r.value)backendURL=r.value; }catch(e){}
+  try{ const t=await window.storage.get(BACKTOK_KEY); backendToken=t&&t.value?t.value:''; }catch(e){}
+}
+async function saveBackend(){
+  const u=(document.getElementById('beInput')||{}).value||'';
+  const t=(document.getElementById('beTok')||{}).value||'';
+  backendURL=u.trim(); backendToken=t.trim();
+  try{ await window.storage.set(BACKEND_KEY,backendURL); await window.storage.set(BACKTOK_KEY,backendToken); }catch(e){}
+  toast(backendURL?'Backend saved':'Backend cleared'); setBeStatus(backendURL?'Saved. Tap Test to verify.':'Not set.');
+}
+async function testBackend(){
+  setBeStatus('Testing…');
+  try{ const r=await callBackend('ping',{});
+    setBeStatus('Connected ✓   '+(r.has&&r.has.rentcast?'RentCast ✓':'RentCast ✗')+'   '+(r.has&&r.has.anthropic?'AI ✓':'AI ✗'));
+  }catch(e){ setBeStatus('Failed: '+((e&&e.message)||e)); }
+}
+function setBeStatus(t){ const el=document.getElementById('beStatus'); if(el)el.textContent=t; }
+let surveys=[]; let mem=false;
+async function loadSurveys(){
+  try{ const r=await window.storage.get(STORE_KEY); surveys=r&&r.value?JSON.parse(r.value):[]; }
+  catch(e){ if(typeof window.storage==='undefined') mem=true; surveys=[]; }
+}
+function stripForSave(s){
+  // never persist large API images; keep small thumbs + extracted data only
+  const c=JSON.parse(JSON.stringify(s, (k,v)=> (k==='_apiImages'?undefined:v)));
+  return c;
+}
+async function saveSurveys(){
+  try{ await window.storage.set(STORE_KEY, JSON.stringify(surveys.map(stripForSave))); }
+  catch(e){ mem=true; }
+}
+
+/* ============================== TRANSIENT (not persisted) ============================== */
+let apiImages={};  // { systemId: [ {base64, mediaType} ] } — full-size for the API only
+
+/* ============================== SCHEMA ============================== */
+const SYS_TYPES=['Central AC','Gas Furnace','AC + Furnace','Heat Pump','Boiler','Package Unit','Mini-Split'];
+const PROP_STEPS=[
+  { id:'customer', title:'Customer & Property', fields:[
+    {id:'name',label:'Customer name',type:'text',req:true},
+    {id:'phone',label:'Phone',type:'tel'},
+    {id:'address',label:'Street address',type:'text',req:true},
+    {id:'city',label:'City',type:'text'},
+    {id:'state',label:'State',type:'text',hint:'e.g. CO'},
+    {id:'zip',label:'ZIP',type:'number'},
+    {id:'sqft',label:'Total conditioned sq ft',type:'number',req:true,hint:'Whole home'},
+    {id:'year',label:'Year built',type:'number',hint:'Affects load'},
+    {id:'stories',label:'Stories',type:'chips',opts:['1','2','3+']},
+    {id:'utility',label:'Power / utility provider',type:'text',hint:'Auto-fills from lookup, or enter'},
+  ]},
+  { id:'systems', title:'Systems', custom:true },
+  { id:'site', title:'Site Conditions', fields:[
+    {id:'duct',label:'Ductwork condition',type:'chips',opts:['Good','Fair','Poor','None / Ductless']},
+    {id:'panel',label:'Electrical panel',type:'chips',opts:['200A','150A','100A','<100A','Unknown']},
+    {id:'panelSpace',label:'Open breaker spaces?',type:'chips',opts:['Yes','No','Unknown']},
+    {id:'lineset',label:'Line set',type:'chips',opts:['Reusable','Replace','N/A']},
+    {id:'drain',label:'Condensate drainage',type:'chips',opts:['Gravity','Pump','None / Issue']},
+    {id:'access',label:'Equipment access',type:'chips',opts:['Easy','Moderate','Tight / Difficult']},
+  ]},
+  { id:'needs', title:'Comfort & Needs', fields:[
+    {id:'motive',label:'Primary driver',type:'chips',req:true,opts:['System failed','Aging system','Comfort issues','High bills','Adding/Remodel']},
+    {id:'comfort',label:'Comfort complaints',type:'chips',multi:true,opts:['Hot/cold rooms','Humidity','Dust / allergies','Noise','Uneven floors']},
+    {id:'stay',label:'Years they plan to stay',type:'chips',opts:['<3','3–7','7–15','15+','Unsure']},
+    {id:'household',label:'Household size',type:'number'},
+    {id:'notes',label:'Tech notes',type:'textarea',hint:'Anything that affects the job'},
+  ]},
+];
+const SYS_FIELDS=[
+  {id:'zone',label:'Zone / location',type:'text',req:true,hint:'e.g. Upstairs, Main floor, Basement'},
+  {id:'area',label:'Area served (sq ft)',type:'number',hint:'For sizing this system'},
+  {id:'sysType',label:'System type',type:'chips',req:true,opts:SYS_TYPES},
+  {id:'fuel',label:'Heating fuel',type:'chips',opts:['Natural Gas','Electric','Propane','Oil','None']},
+  {id:'brand',label:'Brand',type:'text'},
+  {id:'model',label:'Model #',type:'text',hint:'From nameplate'},
+  {id:'serial',label:'Serial #',type:'text'},
+  {id:'eqYear',label:'Equipment age (yrs)',type:'number',req:true},
+  {id:'tons',label:'Nominal tonnage',type:'chips',hint:'Sanity check',opts:['1.5','2','2.5','3','3.5','4','5','N/A']},
+  {id:'condition',label:'Overall condition',type:'chips',opts:['Good','Fair','Poor','Failed']},
+];
+
+/* ============================== STATE ============================== */
+let current=null, stepIdx=0, route='home', showErrors=false, editingSysId=null;
+function newSurvey(){ return {id:'S'+Date.now().toString(36).toUpperCase(),created:Date.now(),updated:Date.now(),data:{systems:[]},done:false}; }
+function newSystem(n){ return {id:'Y'+Date.now().toString(36).toUpperCase()+Math.floor(Math.random()*90+10),zone:n||'',photos:[]}; }
+
+/* ============================== HELPERS ============================== */
+const $=s=>document.querySelector(s);
+const view=()=>$('#view');
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700);}
+function fmtDate(ts){const d=new Date(ts);return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});}
+const NOW_YEAR=new Date().getFullYear();
+function fullAddress(d){ return [d.address,d.city,[d.state,d.zip].filter(Boolean).join(' ')].filter(Boolean).join(', '); }
+
+/* ============================== RECOMMENDATION ENGINE ============================== */
+function estCoolingTons(sqft,year){ sqft=parseFloat(sqft); if(!sqft||sqft<=0)return null; let t=sqft/500; const y=parseInt(year);
+  if(y&&y<1980)t*=1.15; else if(y&&y>2010)t*=0.9; t=Math.round(t*2)/2; return Math.min(5,Math.max(1.5,t)); }
+function estHeatingBTU(sqft){ sqft=parseFloat(sqft); if(!sqft||sqft<=0)return null; const r=n=>Math.round(n/1000)*1000; return {low:r(sqft*35),high:r(sqft*45)}; }
+const TIERS={
+  cooling:[
+    {lvl:'Good',tag:'Standard',spec:'14.3 SEER2 · Single-stage AC',feats:['Meets current efficiency minimum','Reliable, lowest install cost','Best for short-term ownership']},
+    {lvl:'Better',tag:'Two-Stage',spec:'16 SEER2 · Two-stage AC',feats:['Quieter, steadier temperatures','Better humidity control','Solid efficiency / value balance']},
+    {lvl:'Best',tag:'Inverter',spec:'18+ SEER2 · Variable-speed inverter',feats:['Top efficiency & comfort','Excellent humidity + quiet operation','Often unlocks higher rebate tiers']},
+  ],
+  heating:[
+    {lvl:'Good',tag:'80% AFUE',spec:'80% AFUE · Single-stage gas furnace',feats:['Lowest cost gas option','Simple, proven','Where venting limits condensing units']},
+    {lvl:'Better',tag:'96% AFUE',spec:'96% AFUE · Single-stage condensing',feats:['Major fuel savings vs 80%','Common rebate qualifier','Strong value pick']},
+    {lvl:'Best',tag:'Modulating',spec:'98% AFUE · Modulating + variable blower',feats:['Highest efficiency & comfort','Precise, quiet, even heat','Pairs well with zoning / IAQ']},
+  ],
+  heatpump:[
+    {lvl:'Good',tag:'Standard HP',spec:'15 SEER2 / 8.1 HSPF2 · Single-stage',feats:['Electrified heat + cool in one','Entry rebate eligibility','Backup heat recommended']},
+    {lvl:'Better',tag:'Two-Stage',spec:'17 SEER2 / 9 HSPF2 · Two-stage',feats:['Better cold-weather output','Improved comfort & efficiency','Strong rebate positioning']},
+    {lvl:'Best',tag:'Cold-Climate',spec:'19+ SEER2 / 10+ HSPF2 · Variable inverter',feats:['Cold-climate rated performance','Highest rebates & savings','Premium comfort, low operating cost']},
+  ],
+};
+function recSet(sys){ const t=sys.sysType||'';
+  if(t==='Heat Pump'||t==='Mini-Split')return 'heatpump';
+  if(t==='Gas Furnace'||t==='Boiler')return 'heating';
+  if(t==='AC + Furnace'||t==='Package Unit')return 'combo';
+  return 'cooling'; }
+function sysEstimate(sys,d,count){
+  const area=parseFloat(sys.area)||(count===1?parseFloat(d.sqft):null);
+  return {area, cool:area?estCoolingTons(area,d.year):null, heat:area?estHeatingBTU(area):null};
+}
+function buildSystemFlags(sys,d,count){
+  const f=[]; const age=parseInt(sys.eqYear);
+  if(age&&age>=15)f.push({k:'risk',ic:'!',t:'End-of-life equipment ('+age+' yrs)',n:'Strong replacement justification — failure risk is high.'});
+  else if(age&&age>=12)f.push({k:'risk',ic:'!',t:'Aging equipment ('+age+' yrs)',n:'Approaching end of service life.'});
+  if(sys.condition==='Failed')f.push({k:'risk',ic:'!',t:'System has failed',n:'Replacement is immediate; emphasize speed of install.'});
+  const set=recSet(sys);
+  const gas=(sys.fuel==='Natural Gas'||sys.fuel==='Propane'||sys.fuel==='Oil');
+  if(gas&&(sys.sysType==='Gas Furnace'||sys.sysType==='AC + Furnace'))
+    f.push({k:'op',ic:'+',t:'Heat pump conversion candidate',n:'Worth a side-by-side option — may capture electrification rebates (Stage 3).'});
+  const est=sysEstimate(sys,d,count); const existing=parseFloat(sys.tons);
+  if(est.cool&&existing&&Math.abs(existing-est.cool)>=1)
+    f.push({k:'risk',ic:'!',t:'Sizing mismatch flag',n:'Existing '+existing+' ton vs ~'+est.cool+' ton estimate. Confirm with a load calc.'});
+  return {set,est,flags:f};
+}
+function buildPropertyFlags(d,systems){
+  const f=[];
+  const anyHP=systems.some(s=>recSet(s)==='heatpump');
+  const smallPanel=(d.panel==='100A'||d.panel==='<100A');
+  if(anyHP&&(smallPanel||d.panelSpace==='No'))f.push({k:'risk',ic:'!',t:'Electrical panel upgrade likely',n:'Heat pump load may exceed current panel capacity / spaces.'});
+  if(d.duct==='Poor')f.push({k:'op',ic:'+',t:'Ductwork repair / replacement',n:'Poor ducts undercut new equipment — quote duct work.'});
+  else if(d.duct==='Fair')f.push({k:'op',ic:'+',t:'Duct improvement opportunity',n:'Sealing / repair could lift comfort and efficiency.'});
+  if(d.lineset==='Replace')f.push({k:'op',ic:'+',t:'Line set replacement',n:'Flag in scope — affects warranty / refrigerant compatibility.'});
+  const comf=Array.isArray(d.comfort)?d.comfort:(d.comfort?[d.comfort]:[]);
+  if(comf.includes('Dust / allergies')||comf.includes('Humidity'))f.push({k:'iaq',ic:'~',t:'Indoor air quality opportunity',n:'Filtration / humidity control fits the stated complaints.'});
+  if(comf.includes('Hot/cold rooms')||comf.includes('Uneven floors'))f.push({k:'op',ic:'+',t:'Zoning / airflow opportunity',n:'Uneven temps suggest zoning or duct balancing.'});
+  f.push({k:'iaq',ic:'~',t:'Maintenance agreement',n:'Attach a plan to protect the install and add recurring revenue.'});
+  return f;
+}
+
+/* ============================== IMAGE + AI ============================== */
+function resizeImage(file,maxDim,quality){
+  return new Promise((resolve,reject)=>{
+    const img=new Image(); const url=URL.createObjectURL(file);
+    img.onload=()=>{ let w=img.width,h=img.height; const sc=Math.min(1,maxDim/Math.max(w,h));
+      w=Math.round(w*sc); h=Math.round(h*sc);
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h); URL.revokeObjectURL(url);
+      const durl=c.toDataURL('image/jpeg',quality);
+      resolve({dataUrl:durl,base64:durl.split(',')[1],mediaType:'image/jpeg'});
+    };
+    img.onerror=reject; img.src=url;
+  });
+}
+async function onPhotos(sysId,fileList){
+  const sys=getSystem(sysId); if(!sys)return;
+  const files=Array.from(fileList).slice(0,4);
+  for(const file of files){
+    if(!file.type.startsWith('image/'))continue;
+    try{
+      const thumb=await resizeImage(file,200,0.55);
+      const big=await resizeImage(file,1100,0.7);
+      sys.photos=sys.photos||[]; sys.photos.push(thumb.dataUrl);
+      apiImages[sysId]=apiImages[sysId]||[]; apiImages[sysId].push({base64:big.base64,mediaType:big.mediaType});
+    }catch(e){ toast('Photo error'); }
+  }
+  touch(); renderSystemEditor();
+}
+function removePhoto(sysId,i){
+  const sys=getSystem(sysId); if(!sys)return;
+  sys.photos.splice(i,1);
+  if(apiImages[sysId]&&apiImages[sysId][i])apiImages[sysId].splice(i,1);
+  touch(); renderSystemEditor();
+}
+const EXTRACT_PROMPT=`You are reading the data/nameplate label or serial sticker of an HVAC unit from one or more photos. Extract ONLY what is actually visible. Respond with a single JSON object and nothing else — no markdown, no code fences, no commentary. Use these keys:
+{"brand":string|null,"model":string|null,"serial":string|null,"sysTypeGuess":one of ["Central AC","Gas Furnace","AC + Furnace","Heat Pump","Boiler","Package Unit","Mini-Split"] or null,"tonnageGuess":string|null,"fuelGuess":one of ["Natural Gas","Electric","Propane","Oil","None"] or null,"mfgYearGuess":number|null,"ageYearsGuess":number|null,"dateReasoning":string,"confidence":"high"|"medium"|"low","readNotes":string}
+Important: serial-number date encoding differs by manufacturer and is often ambiguous. If you are not confident about the manufacture date, set mfgYearGuess and ageYearsGuess to null and explain why in dateReasoning. Never invent values you cannot read. The current year is `+NOW_YEAR+`.`;
+
+async function runAI(sysId){
+  const sys=getSystem(sysId); if(!sys)return;
+  const imgs=apiImages[sysId]||[];
+  if(!imgs.length){ toast('Add a photo first (this session)'); return; }
+  sys._aiStatus='analyzing'; renderSystemEditor();
+  try{
+    const p=await callBackend('nameplate',{images:imgs.map(x=>({base64:x.base64,mediaType:x.mediaType}))});
+    if(p.brand&&!sys.brand)sys.brand=p.brand;
+    if(p.model&&!sys.model)sys.model=p.model;
+    if(p.serial&&!sys.serial)sys.serial=p.serial;
+    if(p.sysTypeGuess&&!sys.sysType&&SYS_TYPES.includes(p.sysTypeGuess))sys.sysType=p.sysTypeGuess;
+    if(p.fuelGuess&&!sys.fuel)sys.fuel=p.fuelGuess;
+    if(p.tonnageGuess&&!sys.tons){const tg=String(p.tonnageGuess).replace(/[^0-9.]/g,'');if(tg)sys.tons=tg;}
+    if((p.ageYearsGuess||p.ageYearsGuess===0)&&!sys.eqYear)sys.eqYear=String(p.ageYearsGuess);
+    else if(p.mfgYearGuess&&!sys.eqYear)sys.eqYear=String(Math.max(0,NOW_YEAR-p.mfgYearGuess));
+    sys._ai=p; sys._aiStatus='done';
+  }catch(e){ sys._aiStatus='error'; sys._aiError=String((e&&e.message)||e); }
+  touch(); renderSystemEditor();
+}
+
+/* ============================== AI LOOKUPS (address → property + rebates) ============================== */
+async function callBackend(action, payload){
+  if(!backendURL) throw new Error('No backend set — open ⚙ Lookup Backend on the home screen and paste your URL.');
+  const headers={'Content-Type':'application/json'};
+  if(backendToken) headers['x-app-token']=backendToken;
+  let res;
+  try{ res=await fetch(backendURL,{method:'POST',headers,body:JSON.stringify(Object.assign({action},payload))}); }
+  catch(err){ throw new Error('Could not reach backend: '+((err&&err.message)||err)); }
+  const raw=await res.text();
+  let data;
+  try{ data=JSON.parse(raw); }catch(e){ throw new Error('Bad backend reply ('+res.status+'): '+raw.slice(0,120)); }
+  if(!res.ok||data.error) throw new Error(data.error||('HTTP '+res.status));
+  return data;
+}
+async function lookupProperty(){
+  const d=current.data; const addr=fullAddress(d).trim();
+  if(!addr){ toast('Enter the address first'); return; }
+  d._propStatus='loading'; renderStep();
+  try{
+    const p=await callBackend('property',{address:addr});
+    if(p.found===false){ d._propAI={confidence:'low',source:p.source||'',notes:p.notes||'No record found.'}; }
+    else{
+      if(p.sqft&&!d.sqft)d.sqft=String(p.sqft);
+      if(p.yearBuilt&&!d.year)d.year=String(p.yearBuilt);
+      if(p.stories&&!d.stories&&['1','2','3+'].includes(p.stories))d.stories=p.stories;
+      if(p.utilityProvider&&!d.utility)d.utility=p.utilityProvider;
+      d._propAI={confidence:p.confidence||'medium',source:p.source||'',notes:p.notes||''};
+    }
+    d._propStatus='done';
+  }catch(e){ d._propStatus='error'; d._propErr=String((e&&e.message)||e); }
+  touch(); renderStep();
+}
+function propPanelHTML(d){
+  if(d._propStatus==='loading') return '<div class="ai-panel"><div class="ah"><span class="spinner"></span> Looking up property…</div></div>';
+  if(d._propStatus==='error') return '<div class="ai-panel" style="border-color:var(--accent);background:#fdf2ef"><div class="ah" style="color:var(--accent-dk)">Lookup failed</div><div class="reason">Enter the details manually. ('+esc(d._propErr||'')+')</div></div>';
+  if(d._propAI){ const a=d._propAI; const cc=a.confidence||'low';
+    return '<div class="ai-panel"><div class="ah">Property found · verify<span class="conf '+cc+'">'+esc(cc)+'</span></div><div class="reason">'+
+      (a.source?'<b>Source:</b> '+esc(a.source)+'<br>':'')+esc(a.notes||'Pre-filled where found. Confirm square footage before sizing.')+'</div></div>';
+  }
+  return '';
+}
+async function findRebates(){
+  const d=current.data;
+  const addr=fullAddress(d);
+  if(!addr){ toast('Address needed (Step 1)'); return; }
+  d._rebStatus='loading'; renderResults();
+  try{
+    const types=[...new Set((d.systems||[]).map(s=>s.sysType).filter(Boolean))].join(', ')||'HVAC system replacement';
+    const r=await callBackend('rebates',{address:addr,utility:d.utility||'',systemTypes:types});
+    d.rebates=Array.isArray(r.programs)?r.programs:(Array.isArray(r)?r:[]);
+    d._rebStatus='done';
+  }catch(e){ d._rebStatus='error'; d._rebErr=String((e&&e.message)||e); }
+  touch(); renderResults();
+}
+function rebateSectionHTML(d){
+  const has=Array.isArray(d.rebates)&&d.rebates.length;
+  let inner='';
+  if(d._rebStatus==='loading') inner='<div class="ai-panel"><div class="ah"><span class="spinner"></span> Searching federal, state, city &amp; utility programs…</div></div>';
+  else if(d._rebStatus==='error') inner='<div class="ai-panel" style="border-color:var(--accent);background:#fdf2ef"><div class="ah" style="color:var(--accent-dk)">Search failed</div><div class="reason">Try again, or add the utility name on Step 1. ('+esc(d._rebErr||'')+')</div></div>';
+  else if(has) inner=d.rebates.map(r=>{ const lv=(r.level||'').toLowerCase();
+    return '<div class="rb"><div class="rb-h"><span class="rb-lv '+lv+'">'+esc(r.level||'—')+'</span><span class="rb-amt">'+esc(r.estAmount||'')+'</span></div>'+
+      '<div class="rb-name">'+esc(r.program||'')+'</div><div class="rb-d">'+esc(r.covers||'')+(r.eligibility?' · '+esc(r.eligibility):'')+'</div>'+
+      (r.url?'<a class="rb-link" href="'+esc(r.url)+'" target="_blank" rel="noopener">View program ›</a>':'')+'</div>';
+  }).join('');
+  else if(d._rebStatus==='done') inner='<div class="empty">No programs returned. Add the utility name on Step 1 and try again.</div>';
+  const btn='<button class="btn cool sm" style="width:100%" onclick="findRebates()">'+(has?'↻ Refresh rebates':'⌁ Find rebates &amp; incentives')+'</button>';
+  return '<div class="secttl">Rebates &amp; Incentives</div>'+btn+inner+(has?'<div class="note">Programs and amounts change often — confirm current terms and eligibility at each source before quoting.</div>':'');
+}
+
+/* ============================== FIELD RENDERER ============================== */
+function fieldHTML(f,data,setName,pickName){
+  const val=data[f.id];
+  const star=f.req?' <span class="req">*</span>':'';
+  const hint=f.hint?' <span class="hint">— '+esc(f.hint)+'</span>':'';
+  let inner='';
+  if(f.type==='chips'){
+    const sel=f.multi?(Array.isArray(val)?val:[]):val;
+    inner='<div class="chips" data-field="'+f.id+'">'+f.opts.map(o=>{
+      const on=f.multi?sel.includes(o):sel===o;
+      return '<div class="chip '+(on?'on':'')+'" onclick="'+pickName+'(\''+f.id+'\',\''+esc(o)+'\','+(f.multi?1:0)+')">'+esc(o)+'</div>';
+    }).join('')+'</div>';
+  } else if(f.type==='textarea'){
+    inner='<textarea oninput="'+setName+'(\''+f.id+'\',this.value)">'+esc(val||'')+'</textarea>';
+  } else {
+    const im=f.type==='number'?'inputmode="numeric"':(f.type==='tel'?'inputmode="tel"':'');
+    inner='<input type="'+f.type+'" '+im+' value="'+esc(val||'')+'" oninput="'+setName+'(\''+f.id+'\',this.value)">';
+  }
+  return '<div class="field" id="fld_'+f.id+'"><label>'+esc(f.label)+star+hint+'</label>'+inner+'<div class="errmsg">Required</div></div>';
+}
+
+/* ============================== RENDER: HOME ============================== */
+function renderHome(){
+  $('#nav').style.display='none'; $('#hdrRight').textContent=mem?'local':'saved';
+  const list=surveys.slice().sort((a,b)=>b.updated-a.updated);
+  let rows;
+  if(!list.length){ rows='<div class="empty">No surveys yet.<br>Tap <b>New Survey</b> to start your first jobsite.</div>'; }
+  else rows=list.map(s=>{ const d=s.data||{}; const color=s.done?'var(--good)':'#c0810f';
+    const nsys=(d.systems||[]).length; const sysTxt=nsys?nsys+' system'+(nsys>1?'s':''):'no systems';
+    return '<div class="card srow" onclick="openSurvey(\''+s.id+'\')"><span class="dot" style="background:'+color+'"></span>'+
+      '<div><div class="nm">'+esc(d.name||'Untitled survey')+'</div><div class="meta">'+sysTxt+' · '+(s.done?'Rec ready':'In progress')+' · '+fmtDate(s.updated)+'</div></div>'+
+      '<div class="chev">›</div></div>';
+  }).join('');
+  view().innerHTML=
+    '<div class="hero"><div class="kicker">Replacement Survey</div><h1>Size up the job.<br>Get the rec.</h1>'+
+    '<p>Capture the jobsite once — multiple systems, photos, AI nameplate read — then generate Good / Better / Best per system.</p></div>'+
+    '<button class="btn accent" onclick="startNew()">+ New Survey</button>'+
+    '<div class="surveys"><div class="slist-h"><span>Saved Surveys</span><em>'+list.length+' total</em></div>'+rows+'</div>'+
+    '<div class="note" style="margin-top:18px">Stage 1 collects data and recommends equipment. Pricing / margin protection is Stage 2, so no costs appear here by design.</div>'+
+    '<div class="card" style="padding:16px;margin-top:14px">'+
+      '<div class="syshdr" style="margin:0 0 6px">⚙ Lookup Backend</div>'+
+      '<div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">Paste your deployed backend URL (ending in /api/lookup) to turn on property, photo &amp; rebate lookups. Leave blank to use the app fully by hand.</div>'+
+      '<input type="text" id="beInput" placeholder="https://your-app.vercel.app/api/lookup" value="'+esc(backendURL)+'" style="margin-bottom:8px">'+
+      '<input type="text" id="beTok" placeholder="App token (optional)" value="'+esc(backendToken)+'">'+
+      '<div style="display:flex;gap:8px;margin-top:8px">'+
+        '<button class="btn ghost sm" style="flex:1" onclick="saveBackend()">Save</button>'+
+        '<button class="btn cool sm" style="flex:1" onclick="testBackend()">Test</button>'+
+      '</div>'+
+      '<div id="beStatus" style="font-size:11.5px;color:var(--muted);margin-top:8px">'+(backendURL?'Saved. Tap Test to verify.':'Not set — lookups are off.')+'</div>'+
+    '</div>';
+  window.scrollTo(0,0);
+}
+
+/* ============================== RENDER: STEP ============================== */
+function renderStep(){
+  const step=PROP_STEPS[stepIdx];
+  if(step.custom&&step.id==='systems'){ renderSystemsList(); return; }
+  const segs=PROP_STEPS.map((_,i)=>'<div class="seg '+(i<=stepIdx?'on':'')+'"></div>').join('')+'<div class="seg '+(route==='results'?'on':'')+'"></div>';
+  let extra='';
+  if(step.id==='customer') extra=
+    '<button class="btn cool sm" style="width:100%;margin-bottom:6px" onclick="lookupProperty()">⌁ Look up property from address</button>'+
+    '<p style="color:var(--muted);font-size:11px;margin:0 2px 14px">Pre-fills sq ft, year, stories & utility above — always verify square footage.</p>'+
+    propPanelHTML(current.data);
+  view().innerHTML='<div class="prog">'+segs+'</div>'+
+    '<div class="stepcap">Step '+(stepIdx+1)+' of '+(PROP_STEPS.length+1)+' · '+esc(current.data.name||current.id)+'</div>'+
+    '<div class="steph">'+esc(step.title)+'</div>'+
+    step.fields.map(f=>fieldHTML(f,current.data,'setVal','pickChip')).join('')+extra;
+  if(showErrors)markErrors(step);
+  renderNav(); window.scrollTo(0,0);
+}
+function renderSystemsList(){
+  const segs=PROP_STEPS.map((_,i)=>'<div class="seg '+(i<=stepIdx?'on':'')+'"></div>').join('')+'<div class="seg"></div>';
+  const sys=current.data.systems||[];
+  let cards;
+  if(!sys.length) cards='<div class="empty">No systems added yet.<br>Add one for each independent unit (e.g. Upstairs, Main floor).</div>';
+  else cards=sys.map(s=>{
+    const ok=s.zone&&s.sysType&&s.eqYear; const color=ok?'var(--good)':'#c0810f';
+    const meta=[s.sysType||'type?',s.brand||'',s.eqYear?s.eqYear+' yrs':''].filter(Boolean).join(' · ');
+    return '<div class="card syscard" onclick="editSystem(\''+s.id+'\')"><span class="dot" style="background:'+color+'"></span>'+
+      '<div><div class="z">'+esc(s.zone||'Unnamed system')+'</div><div class="m">'+esc(meta)+'</div></div>'+
+      '<button class="del" onclick="event.stopPropagation();deleteSystem(\''+s.id+'\')">Del</button></div>';
+  }).join('');
+  view().innerHTML='<div class="prog">'+segs+'</div>'+
+    '<div class="stepcap">Step '+(stepIdx+1)+' of '+(PROP_STEPS.length+1)+' · '+esc(current.data.name||current.id)+'</div>'+
+    '<div class="steph">Systems in this home</div>'+
+    '<p style="color:var(--muted);font-size:13px;margin:-8px 2px 14px">Add a system for each independent unit. Each gets its own recommendation.</p>'+
+    cards+'<button class="addsys" onclick="addSystem()" style="margin-top:10px">+ Add system</button>';
+  renderNav(); window.scrollTo(0,0);
+}
+
+/* ============================== RENDER: SYSTEM EDITOR ============================== */
+function renderSystemEditor(){
+  const s=getSystem(editingSysId); if(!s){ stepIdx=systemsStepIdx(); route='survey'; renderSystemsList(); return; }
+  route='system';
+  const photos=(s.photos||[]).map((p,i)=>'<div class="thumbx"><img class="thumb" src="'+p+'"><button onclick="removePhoto(\''+s.id+'\','+i+')">×</button></div>').join('');
+  const hasSession=(apiImages[s.id]||[]).length>0;
+  let aiPanel='';
+  if(s._aiStatus==='analyzing') aiPanel='<div class="ai-panel"><div class="ah"><span class="spinner"></span> Reading nameplate…</div></div>';
+  else if(s._aiStatus==='error') aiPanel='<div class="ai-panel" style="border-color:var(--accent);background:#fdf2ef"><div class="ah" style="color:var(--accent-dk)">Couldn\'t read it</div><div class="reason">Enter details manually below. ('+esc(s._aiError||'request failed')+')</div></div>';
+  else if(s._ai){ const a=s._ai; const cc=(a.confidence||'low');
+    aiPanel='<div class="ai-panel"><div class="ah">AI read · verify below<span class="conf '+cc+'">'+esc(cc)+'</span></div>'+
+      '<div class="reason"><b>Date:</b> '+esc(a.dateReasoning||'—')+(a.readNotes?'<br><b>Notes:</b> '+esc(a.readNotes):'')+'</div></div>';
+  }
+  const photoSection=
+    '<div class="syshdr">Nameplate Photos</div>'+
+    '<div class="photo-wrap"><div class="photo-row">'+photos+
+      '<label class="addphoto">+<input type="file" accept="image/*" multiple onchange="onPhotos(\''+s.id+'\',this.files)"></label>'+
+    '</div>'+
+    '<button class="btn cool sm" style="width:100%" onclick="runAI(\''+s.id+'\')" '+(hasSession?'':'disabled')+'>'+
+      (hasSession?'⌁ Read with AI':'Take a photo to enable AI')+'</button>'+
+    aiPanel+'</div>';
+  view().innerHTML=
+    '<div class="stepcap">'+esc(current.data.name||current.id)+' · system</div>'+
+    '<div class="steph">'+esc(s.zone||'New system')+'</div>'+
+    photoSection+
+    '<div class="syshdr">Equipment Details</div>'+
+    SYS_FIELDS.map(f=>fieldHTML(f,s,'setSysVal','pickSysChip')).join('');
+  if(showErrors)SYS_FIELDS.forEach(f=>{ if(!f.req)return; const v=s[f.id]; const ok=v&&(!Array.isArray(v)||v.length);
+    const el=document.getElementById('fld_'+f.id); if(el)el.classList.toggle('invalid',!ok); });
+  $('#nav').style.display='block';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="doneSystem()">‹ Systems</button><button class="btn accent" onclick="doneSystem()">Save system</button>';
+  window.scrollTo(0,0);
+}
+
+/* ============================== RENDER: RESULTS ============================== */
+function tierBlocks(setKey){ const set=TIERS[setKey]; const cls={0:'good',1:'better',2:'best'};
+  return set.map((t,i)=>'<div class="tier '+cls[i]+'"><div class="head"><span class="lvl">'+t.lvl+'</span><span class="tag">'+esc(t.tag)+'</span></div>'+
+    '<div class="body"><div class="spec">'+esc(t.spec)+'</div><ul>'+t.feats.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></div>').join(''); }
+function estBoxesHTML(set,est){
+  let h=''; const showCool=(set==='cooling'||set==='combo'||set==='heatpump'); const showHeat=(set==='heating'||set==='combo'||set==='heatpump');
+  if(showCool&&est.cool)h+='<div class="box cool"><div class="lab">'+(set==='heatpump'?'Cooling':'Est. Cooling')+'</div><div class="num">'+est.cool+'<small> ton</small></div></div>';
+  if(showHeat&&est.heat)h+='<div class="box heat"><div class="lab">'+(set==='heatpump'?'Heating Need':'Est. Heating')+'</div><div class="num">'+(est.heat.low/1000)+'–'+(est.heat.high/1000)+'<small>k BTU</small></div></div>';
+  if(!h)h='<div class="box"><div class="lab">Sizing</div><div class="num" style="font-size:14px">Set area served</div></div>';
+  return h;
+}
+function renderResults(){
+  const d=current.data; const systems=d.systems||[]; const count=systems.length;
+  $('#nav').style.display='block';
+  let sysHTML=systems.map((s,idx)=>{
+    const {set,est,flags}=buildSystemFlags(s,d,count);
+    let blocks;
+    if(set==='combo')blocks='<div class="secttl" style="margin-top:2px">Cooling</div>'+tierBlocks('cooling')+'<div class="secttl">Heating</div>'+tierBlocks('heating');
+    else blocks=tierBlocks(set==='heatpump'?'heatpump':(set==='heating'?'heating':'cooling'));
+    const fl=flags.map(f=>'<div class="flag '+f.k+'"><div class="ic">'+f.ic+'</div><div><div class="t">'+esc(f.t)+'</div><div class="n">'+esc(f.n)+'</div></div></div>').join('');
+    return '<div class="syshdr" style="font-size:13px;color:var(--ink);border-bottom:2px solid var(--accent);padding-bottom:6px">'+
+        '◼ '+esc(s.zone||('System '+(idx+1)))+' <span style="color:var(--muted);font-weight:600">— '+esc(s.sysType||'')+'</span></div>'+
+      '<div class="est">'+estBoxesHTML(set,est)+'</div>'+blocks+
+      (fl?'<div class="flags">'+fl+'</div>':'');
+  }).join('');
+  const pflags=buildPropertyFlags(d,systems);
+  const pf=pflags.map(f=>'<div class="flag '+f.k+'"><div class="ic">'+f.ic+'</div><div><div class="t">'+esc(f.t)+'</div><div class="n">'+esc(f.n)+'</div></div></div>').join('');
+  view().innerHTML=
+    '<div class="prog">'+PROP_STEPS.map(()=>'<div class="seg on"></div>').join('')+'<div class="seg on"></div></div>'+
+    '<div class="stepcap">Recommendation · '+esc(d.name||current.id)+'</div>'+
+    '<div class="steph">'+count+' system'+(count!==1?'s':'')+' · Good / Better / Best</div>'+
+    (count?sysHTML:'<div class="empty">No systems to recommend. Go back and add at least one.</div>')+
+    '<div class="secttl">Whole-Home Opportunities & Flags</div><div class="flags">'+(pf||'<div class="empty">No property flags.</div>')+'</div>'+
+    rebateSectionHTML(d)+
+    '<button class="btn ghost sm" style="width:100%;margin-top:8px" onclick="copySummary()">Copy job summary</button>'+
+    '<div class="note">Capacity figures are a <b>preliminary heuristic</b> from area + home age — not a Manual J. Confirm with a full load calc before quoting. No pricing shown (Stage 2).</div>';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="editFromResults()">Edit</button><button class="btn accent" onclick="finishSurvey()">Done</button>';
+  window.scrollTo(0,0);
+}
+
+/* ============================== INTERACTION ============================== */
+function getSystem(id){ return (current.data.systems||[]).find(s=>s.id===id); }
+function systemsStepIdx(){ return PROP_STEPS.findIndex(s=>s.id==='systems'); }
+function setVal(id,v){ current.data[id]=v; touch(); }
+function pickChip(id,val,multi){ pick(current.data,id,val,multi); touch(); renderStep(); }
+function setSysVal(id,v){ const s=getSystem(editingSysId); if(s){ s[id]=v; touch(); } }
+function pickSysChip(id,val,multi){ const s=getSystem(editingSysId); if(!s)return; pick(s,id,val,multi); touch(); renderSystemEditor(); }
+function pick(obj,id,val,multi){
+  if(multi){ const arr=Array.isArray(obj[id])?obj[id]:[]; const i=arr.indexOf(val); if(i>=0)arr.splice(i,1); else arr.push(val); obj[id]=arr; }
+  else obj[id]=obj[id]===val?'':val;
+}
+let saveTimer=null;
+function touch(){ current.updated=Date.now(); clearTimeout(saveTimer); saveTimer=setTimeout(persistCurrent,500); }
+async function persistCurrent(){ const i=surveys.findIndex(s=>s.id===current.id); if(i>=0)surveys[i]=current; else surveys.push(current);
+  await saveSurveys(); $('#hdrRight').textContent=mem?'local':'saved'; }
+
+function validateStep(step){ if(step.custom)return true; return step.fields.filter(f=>f.req).every(f=>{ const v=current.data[f.id]; return v&&(!Array.isArray(v)||v.length); }); }
+function markErrors(step){ if(step.custom)return; step.fields.forEach(f=>{ if(!f.req)return; const v=current.data[f.id]; const ok=v&&(!Array.isArray(v)||v.length);
+  const el=document.getElementById('fld_'+f.id); if(el)el.classList.toggle('invalid',!ok); }); }
+
+function goNext(){
+  const step=PROP_STEPS[stepIdx];
+  if(step.custom&&step.id==='systems'){
+    const sys=current.data.systems||[];
+    if(!sys.length){ toast('Add at least one system'); return; }
+    const bad=sys.find(s=>!(s.zone&&s.sysType&&s.eqYear));
+    if(bad){ toast('Finish each system (zone, type, age)'); return; }
+  } else if(!validateStep(step)){ showErrors=true; markErrors(step); toast('Fill required fields'); return; }
+  showErrors=false; persistCurrent();
+  if(stepIdx<PROP_STEPS.length-1){ stepIdx++; renderStep(); }
+  else { route='results'; renderResults(); }
+}
+function goBack(){ showErrors=false;
+  if(stepIdx===0){ persistCurrent(); route='home'; renderHome(); }
+  else { stepIdx--; renderStep(); } }
+function renderNav(){ $('#nav').style.display='block'; const last=stepIdx===PROP_STEPS.length-1;
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="goBack()">'+(stepIdx===0?'Exit':'Back')+'</button>'+
+    '<button class="btn accent" onclick="goNext()">'+(last?'Review →':'Next →')+'</button>'; }
+
+function addSystem(){ const n=(current.data.systems||[]).length;
+  const label=n===0?'Main floor':(n===1?'Upstairs':'System '+(n+1));
+  const s=newSystem(label); current.data.systems=current.data.systems||[]; current.data.systems.push(s);
+  editingSysId=s.id; touch(); renderSystemEditor(); }
+function editSystem(id){ editingSysId=id; showErrors=false; renderSystemEditor(); }
+function deleteSystem(id){ current.data.systems=(current.data.systems||[]).filter(s=>s.id!==id); delete apiImages[id]; touch(); renderSystemsList(); }
+function doneSystem(){ editingSysId=null; showErrors=false; stepIdx=systemsStepIdx(); route='survey'; persistCurrent(); renderSystemsList(); }
+
+function editFromResults(){ route='survey'; stepIdx=0; renderStep(); }
+function finishSurvey(){ current.done=true; persistCurrent(); toast('Survey saved'); route='home'; renderHome(); }
+function startNew(){ current=newSurvey(); apiImages={}; stepIdx=0; route='survey'; showErrors=false; renderStep(); }
+function openSurvey(id){ current=surveys.find(s=>s.id===id); if(!current)return; apiImages={}; stepIdx=0; showErrors=false;
+  ['_propStatus','_rebStatus'].forEach(k=>{ if(current.data[k]==='loading')current.data[k]=''; });
+  if(current.done){ route='results'; renderResults(); } else { route='survey'; renderStep(); } }
+
+function copySummary(){
+  const d=current.data; const systems=d.systems||[];
+  const lines=['FIELD ENGINEER — JOB SUMMARY','Customer: '+(d.name||'')+'   '+(d.phone||''),'Address: '+fullAddress(d),
+    'Home: '+(d.sqft||'?')+' sq ft'+(d.year?', built '+d.year:''),''];
+  systems.forEach((s,i)=>{ const {set,est}=buildSystemFlags(s,d,systems.length);
+    lines.push('SYSTEM '+(i+1)+': '+(s.zone||''));
+    lines.push('  '+(s.sysType||'?')+' / '+(s.fuel||'?')+' / '+(s.eqYear||'?')+' yrs / cond '+(s.condition||'?'));
+    if(s.brand||s.model)lines.push('  '+(s.brand||'')+' '+(s.model||'')+(s.serial?'  SN '+s.serial:''));
+    if(est.cool)lines.push('  ~'+est.cool+' ton cooling (preliminary)');
+    if(est.heat)lines.push('  ~'+(est.heat.low/1000)+'–'+(est.heat.high/1000)+'k BTU heating (preliminary)');
+    lines.push('');
+  });
+  lines.push('Whole-home flags:');
+  buildPropertyFlags(d,systems).forEach(f=>lines.push('  - '+f.t));
+  const txt=lines.join('\n');
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast('Summary copied')).catch(()=>toast('Copy failed'));
+  else toast('Clipboard unavailable');
+}
+
+/* ============================== BOOT ============================== */
+(async function(){ await loadSurveys(); await loadBackend(); renderHome(); })();
+</script>
