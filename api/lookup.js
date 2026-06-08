@@ -44,6 +44,7 @@ export default async function handler(req, res){
     if (action === 'property')  { res.status(200).json(await getProperty(body));  return; }
     if (action === 'nameplate') { res.status(200).json(await getNameplate(body)); return; }
     if (action === 'rebates')   { res.status(200).json(await getRebates(body));   return; }
+    if (action === 'diagnose')  { res.status(200).json(await getDiagnose(body)); return; }
     res.status(400).json({ error: 'Unknown action: ' + action });
   } catch (e) {
     res.status(500).json({ error: String((e && e.message) || e) });
@@ -129,6 +130,37 @@ async function getRebates(body){
   let arr = parseJSON(text);
   if (!Array.isArray(arr)) arr = (arr && Array.isArray(arr.programs)) ? arr.programs : [];
   return { programs: arr };
+}
+
+// ---------------------------------------------------------------- DIAGNOSE
+const DIAGNOSE_SYSTEM =
+'You are a senior HVAC service mentor guiding a technician through a live trouble call, one step at a time. ' +
+'Your job is to make a less-experienced tech perform safely above their level. This is SERVICE/REPAIR work, not installation. ' +
+'You receive the equipment, job type, the customer-reported vs tech-confirmed complaint, the captured components, the running trail of checks and the ACTUAL measured values entered so far, and the technician profile. ' +
+'Respond with ONE JSON object and nothing else (no markdown). It must be exactly one of these shapes:\n' +
+'{"kind":"step","step":{"stepId":string,"title":string,"how":string,"expects":{"type":string,"unit":string},"inlineCaution":string|null,"requiresGate":string|null}}\n' +
+'{"kind":"diagnosis","diagnosis":string,"repair":{"requiresGate":string|null,"steps":[string],"inlineCaution":string|null}}\n' +
+'{"kind":"hardstop","hardstop":{"stopId":string,"type":"universal"|"conditional","message":string,"action":string,"clearedBy":{"gates":[string]}}}\n' +
+'Rules:\n' +
+'- Propose the single best next CHECK given everything known. "how" must teach a novice exactly how to perform it safely; "expects" is the kind of reading and its unit. Interpret the most recent value in the trail before deciding the next step.\n' +
+'- requiresGate uses these codes; MEASUREMENT/DIAGNOSIS is always allowed so use null for any step that is only measuring/observing (including measuring on 3-phase). Only set a gate code when the step or repair is a HANDS-ON modification: ' +
+'"EPA-U" (low-pressure refrigerant; note EPA Type II high-pressure recovery/charge/leak is baseline so use null), "E1" (line-voltage 1-phase wiring repair), "E2" (hands-on 3-phase work), "E3" (new circuit/branch wiring), "G1" (gas valve/piping), "G2" (combustion analysis/venting sign-off/confirming cracked heat exchanger), "HP","B1","B2","WH","CB".\n' +
+'- Hard stops: "universal" for gas-leak odor, active CO, or standing water on energized equipment (no override). "conditional" for a suspected cracked heat exchanger (clearedBy gates ["G2"]) or readings that cannot be reconciled / low confidence. Prefer a conditional hard stop over guessing.\n' +
+'- When confident, return a "diagnosis" with concise, novice-followable component-level repair steps and the repair\'s requiresGate. Never guide installs or commissioning of new systems.\n' +
+'- Keep "how" and steps short and field-usable. Tailor verbosity to tech.level (novice = more detail).';
+
+async function getDiagnose(body){
+  if (!ANTHROPIC_KEY) throw new Error('ANTHROPIC_API_KEY not set on server');
+  const ctx = {
+    equipment: body.equipment, jobType: body.jobType,
+    complaint: body.complaint, components: body.components, trail: body.trail, tech: body.tech
+  };
+  const content = [];
+  const imgs = Array.isArray(body.images) ? body.images : [];
+  imgs.slice(0, 3).forEach(p => content.push({ type: 'image', source: { type: 'base64', media_type: p.mediaType || 'image/jpeg', data: p.base64 } }));
+  content.push({ type: 'text', text: DIAGNOSE_SYSTEM + '\n\nCONTEXT:\n' + JSON.stringify(ctx) + '\n\nReturn the next JSON object now.' });
+  const text = await anthropic({ max_tokens: 1024, messages: [{ role: 'user', content }] });
+  return parseJSON(text);
 }
 
 // ---------------------------------------------------------------- HELPERS
