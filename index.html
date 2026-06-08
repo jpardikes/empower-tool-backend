@@ -132,6 +132,50 @@
   .spinner{width:16px;height:16px;border:2px solid rgba(28,102,201,.3);border-top-color:var(--cool);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .iconbtn{background:none;border:none;color:inherit;cursor:pointer;font-family:'Archivo';font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:6px;}
+
+  /* mode select */
+  .mode-hero{padding:30px 4px 18px;text-align:center;}
+  .mode-hero .badge2{width:54px;height:54px;border:2px solid var(--accent);border-radius:7px;display:grid;place-items:center;font-family:'Archivo';font-weight:900;font-size:24px;color:var(--accent);margin:0 auto 18px;}
+  .mode-hero h1{font-family:'Archivo';font-weight:900;font-size:30px;line-height:1;}
+  .mode-hero p{color:var(--muted);font-size:13px;margin-top:8px;}
+  .mode-card{display:flex;align-items:center;gap:14px;padding:20px 18px;cursor:pointer;margin-bottom:12px;transition:transform .08s;}
+  .mode-card:active{transform:scale(.99);}
+  .mode-card .ic{width:46px;height:46px;border-radius:8px;display:grid;place-items:center;font-size:22px;flex:0 0 auto;color:#fff;font-family:'Archivo';font-weight:900;}
+  .mode-card .ic.t{background:var(--cool);} .mode-card .ic.s{background:var(--accent);}
+  .mode-card h3{font-family:'Archivo';font-weight:800;font-size:17px;}
+  .mode-card .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .mode-card .cv{margin-left:auto;color:var(--line-strong);font-size:22px;}
+  .switcher{text-align:center;margin-top:6px;}
+
+  /* tech */
+  .who{background:var(--chrome);color:#f3f1e8;border-radius:6px;padding:11px 13px;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .who .av{width:34px;height:34px;border-radius:50%;background:var(--cool);display:grid;place-items:center;font-family:'Archivo';font-weight:800;font-size:13px;flex:0 0 auto;}
+  .who .nm{font-weight:700;font-size:13px;} .who .lv{font-size:10px;color:#9b988c;letter-spacing:.08em;text-transform:uppercase;}
+  .who .ed{margin-left:auto;font-family:'Archivo';font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--cool);cursor:pointer;}
+  .gatechips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+  .gatechip{font-family:'IBM Plex Mono';font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:10px;background:#2a2a20;color:#d6cfbc;letter-spacing:.04em;}
+  .gatechip.on{background:var(--good);color:#fff;}
+  .eqgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .eqtile{background:var(--paper);border:1.5px solid var(--line-strong);border-radius:6px;padding:18px 12px;text-align:center;cursor:pointer;}
+  .eqtile:active{transform:scale(.98);} .eqtile.on{border-color:var(--accent);background:#fff;}
+  .eqtile .em{font-size:26px;} .eqtile .nm{font-family:'Archivo';font-weight:700;font-size:12px;margin-top:6px;text-transform:uppercase;letter-spacing:.04em;}
+  .comp{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:4px;padding:12px 13px;display:flex;align-items:center;gap:10px;margin-bottom:9px;cursor:pointer;}
+  .comp.done{border-left-color:var(--good);} .comp .nm{font-weight:700;font-size:13px;} .comp .mt{font-size:10.5px;color:var(--muted);margin-top:2px;} .comp .cv{margin-left:auto;color:var(--line-strong);font-size:20px;}
+  .trail{margin-bottom:14px;}
+  .trailitem{font-size:12px;padding:7px 10px;background:#efece3;border-radius:4px;margin-bottom:5px;display:flex;gap:8px;}
+  .trailitem .v{margin-left:auto;font-family:'IBM Plex Mono';font-weight:600;}
+  .stepcard{background:var(--paper);border:1.5px solid var(--cool);border-radius:6px;padding:15px;margin-bottom:14px;}
+  .stepcard .st{font-family:'Archivo';font-weight:800;font-size:16px;margin-bottom:8px;}
+  .stepcard .how{font-size:13px;color:#3d3a32;line-height:1.5;margin-bottom:10px;}
+  .caution{background:#fffaf0;border:1px solid var(--warn);border-radius:4px;padding:9px 11px;font-size:12px;color:#7a5a10;margin-bottom:10px;}
+  .caution b{color:var(--warn);}
+  .stopcard{background:#fdf2ef;border:2px solid var(--accent);border-radius:6px;padding:16px;margin-bottom:14px;}
+  .stopcard .sh{font-family:'Archivo';font-weight:900;font-size:18px;color:var(--accent-dk);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+  .stopcard .act{font-size:13px;color:var(--ink);font-weight:600;margin-top:8px;}
+  .diagcard{background:var(--paper);border:1.5px solid var(--good);border-radius:6px;padding:16px;margin-bottom:14px;}
+  .diagcard .dh{font-family:'Archivo';font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--good);margin-bottom:6px;}
+  .diagcard .dx{font-family:'Archivo';font-weight:800;font-size:18px;}
+  .danger-btn{background:none;border:1.5px solid var(--accent);color:var(--accent-dk);border-radius:4px;font-family:'Archivo';font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:9px;width:100%;cursor:pointer;margin-bottom:10px;}
 </style>
 
 <div class="app">
@@ -147,19 +191,30 @@
 
 <script>
 /* ============================== STORAGE ============================== */
+// Uses the platform storage when available (Claude preview); otherwise localStorage (hosted site).
+const store={
+  async get(k){
+    if(typeof window!=='undefined'&&window.storage){ try{ const r=await window.storage.get(k); return r&&r.value?r.value:null; }catch(e){} }
+    try{ return localStorage.getItem(k); }catch(e){ return null; }
+  },
+  async set(k,v){
+    if(typeof window!=='undefined'&&window.storage){ try{ await window.storage.set(k,v); return; }catch(e){} }
+    try{ localStorage.setItem(k,v); }catch(e){}
+  }
+};
 const STORE_KEY='fieldeng_surveys_v2';
 const BACKEND_KEY='fieldeng_backend_url';
 const BACKTOK_KEY='fieldeng_backend_token';
 let backendURL='/api/lookup', backendToken='';
 async function loadBackend(){
-  try{ const r=await window.storage.get(BACKEND_KEY); if(r&&r.value)backendURL=r.value; }catch(e){}
-  try{ const t=await window.storage.get(BACKTOK_KEY); backendToken=t&&t.value?t.value:''; }catch(e){}
+  const u=await store.get(BACKEND_KEY); if(u)backendURL=u;
+  backendToken=(await store.get(BACKTOK_KEY))||'';
 }
 async function saveBackend(){
   const u=(document.getElementById('beInput')||{}).value||'';
   const t=(document.getElementById('beTok')||{}).value||'';
   backendURL=u.trim(); backendToken=t.trim();
-  try{ await window.storage.set(BACKEND_KEY,backendURL); await window.storage.set(BACKTOK_KEY,backendToken); }catch(e){}
+  await store.set(BACKEND_KEY,backendURL); await store.set(BACKTOK_KEY,backendToken);
   toast(backendURL?'Backend saved':'Backend cleared'); setBeStatus(backendURL?'Saved. Tap Test to verify.':'Not set.');
 }
 async function testBackend(){
@@ -171,8 +226,7 @@ async function testBackend(){
 function setBeStatus(t){ const el=document.getElementById('beStatus'); if(el)el.textContent=t; }
 let surveys=[]; let mem=false;
 async function loadSurveys(){
-  try{ const r=await window.storage.get(STORE_KEY); surveys=r&&r.value?JSON.parse(r.value):[]; }
-  catch(e){ if(typeof window.storage==='undefined') mem=true; surveys=[]; }
+  const r=await store.get(STORE_KEY); surveys=r?JSON.parse(r):[];
 }
 function stripForSave(s){
   // never persist large API images; keep small thumbs + extracted data only
@@ -180,8 +234,7 @@ function stripForSave(s){
   return c;
 }
 async function saveSurveys(){
-  try{ await window.storage.set(STORE_KEY, JSON.stringify(surveys.map(stripForSave))); }
-  catch(e){ mem=true; }
+  await store.set(STORE_KEY, JSON.stringify(surveys.map(stripForSave)));
 }
 
 /* ============================== TRANSIENT (not persisted) ============================== */
@@ -466,6 +519,7 @@ function renderHome(){
       '<div class="chev">›</div></div>';
   }).join('');
   view().innerHTML=
+    '<div class="switcher"><button class="iconbtn" onclick="renderModeSelect()">\u2194 Switch mode</button></div>'+
     '<div class="hero"><div class="kicker">Replacement Survey</div><h1>Size up the job.<br>Get the rec.</h1>'+
     '<p>Capture the jobsite once — multiple systems, photos, AI nameplate read — then generate Good / Better / Best per system.</p></div>'+
     '<button class="btn accent" onclick="startNew()">+ New Survey</button>'+
@@ -669,6 +723,322 @@ function copySummary(){
   else toast('Clipboard unavailable');
 }
 
+/* ============================== MODE SELECT ============================== */
+function setHeaderSub(t){ const el=document.querySelector('header .sub'); if(el)el.textContent=t; }
+function renderModeSelect(){
+  $('#nav').style.display='none'; $('#hdrRight').textContent='';
+  setHeaderSub('Choose your workflow');
+  view().innerHTML=
+    '<div class="mode-hero"><div class="badge2">FE</div><h1>Field Engineer</h1><p>What are you here to do today?</p></div>'+
+    '<div class="card mode-card" onclick="enterSales()"><div class="ic s">S</div><div><h3>Sales / Survey</h3><div class="sub">Replacement evaluation &amp; Good/Better/Best recommendation</div></div><div class="cv">›</div></div>'+
+    '<div class="card mode-card" onclick="enterTech()"><div class="ic t">T</div><div><h3>Tech / Repair</h3><div class="sub">Trouble-call diagnosis &amp; guided repair</div></div><div class="cv">›</div></div>';
+  window.scrollTo(0,0);
+}
+function enterSales(){ setHeaderSub('Stage 1 · Survey + Rec'); renderHome(); }
+function enterTech(){ setHeaderSub('Service · Repair Copilot'); renderTechHome(); }
+
+/* ============================== TECH: STATE ============================== */
+const TECH_PROF_KEY='fieldeng_tech_profile';
+const TECH_CALLS_KEY='fieldeng_tech_calls_v1';
+let techProfile=null, techCalls=[], currentCall=null, techApiImages={};
+function defaultProfile(){ return {techId:'T-1001',name:'New Tech',level:'novice',epaType:'II',epaCert:'',gates:[],conditionalOverride:false}; }
+async function loadTech(){
+  const p=await store.get(TECH_PROF_KEY); techProfile=p?JSON.parse(p):defaultProfile();
+  const c=await store.get(TECH_CALLS_KEY); techCalls=c?JSON.parse(c):[];
+}
+async function saveTechProfile(){ await store.set(TECH_PROF_KEY,JSON.stringify(techProfile)); }
+function stripCall(c){ return JSON.parse(JSON.stringify(c,(k,v)=>(k==='_busy'||k==='_stepDraft'?undefined:v))); }
+async function saveTechCall(){
+  if(!currentCall)return; currentCall.updated=Date.now();
+  const i=techCalls.findIndex(c=>c.id===currentCall.id);
+  if(i>=0)techCalls[i]=currentCall; else techCalls.push(currentCall);
+  await store.set(TECH_CALLS_KEY,JSON.stringify(techCalls.map(stripCall)));
+}
+
+const ALL_GATES=[
+  {code:'EPA-U',label:'EPA Universal'},{code:'E1',label:'Line-voltage 1\u00d8'},{code:'E2',label:'3-phase'},
+  {code:'E3',label:'New circuits'},{code:'G1',label:'Gas valve/piping'},{code:'G2',label:'Combustion/venting'},
+  {code:'HP',label:'Heat pumps'},{code:'B1',label:'Hydronic boilers'},{code:'B2',label:'Steam boilers'},
+  {code:'WH',label:'Water heaters'},{code:'CB',label:'Combi units'}
+];
+const TECH_EQUIP=[
+  {key:'furnace',name:'Furnace',jobType:'No Heat',components:['Furnace','Thermostat']},
+  {key:'ac',name:'A / C',jobType:'No Cooling',components:['Condenser','Air handler / Furnace','Thermostat']},
+  {key:'heatpump',name:'Heat Pump',jobType:'Heat Pump Issue',components:['Outdoor unit','Air handler','Thermostat']},
+  {key:'boiler',name:'Boiler',jobType:'No Heat (Hydronic)',components:['Boiler','Thermostat / Aquastat','Circulator']},
+  {key:'waterheater',name:'Water Heater',jobType:'No Hot Water',components:['Water heater','Gas / Power supply','Venting']},
+  {key:'combi',name:'Combi Unit',jobType:'No Heat / Hot Water',components:['Combi unit','Thermostat','Zone controls']}
+];
+function hasGate(code){
+  if(!code||code==='none')return true;
+  if(code==='EPA2'||code==='EPA-II')return true;
+  if(code==='EPA-U')return techProfile.epaType==='Universal'||techProfile.gates.includes('EPA-U');
+  return techProfile.gates.includes(code);
+}
+function canClearStop(hs){ const need=(hs.clearedBy&&hs.clearedBy.gates)||[]; return techProfile.conditionalOverride && need.every(hasGate); }
+
+/* ============================== TECH: HOME + PROFILE ============================== */
+function whoBar(){
+  const p=techProfile; const init=(p.name||'T').trim().slice(0,2).toUpperCase();
+  return '<div class="who"><div class="av">'+esc(init)+'</div><div><div class="nm">'+esc(p.name)+' · '+esc(p.techId)+'</div>'+
+    '<div class="lv">'+esc(p.level)+' · EPA '+esc(p.epaType)+(p.conditionalOverride?' · override':'')+'</div></div>'+
+    '<div class="ed" onclick="renderProfile()">Edit</div></div>';
+}
+function renderTechHome(){
+  $('#nav').style.display='none'; $('#hdrRight').textContent='tech'; setHeaderSub('Service · Repair Copilot');
+  const list=techCalls.slice().sort((a,b)=>(b.updated||b.created)-(a.updated||a.created));
+  let rows;
+  if(!list.length) rows='<div class="empty">No trouble calls yet.<br>Tap <b>New Trouble Call</b> when you arrive on site.</div>';
+  else rows=list.map(c=>{ const color=c.status==='closed'?'var(--good)':(c.escalation?'var(--accent)':'#c0810f');
+    const st=c.status==='closed'?'Closed':(c.escalation?'Escalated':'In progress');
+    return '<div class="card srow" onclick="openCall(\''+c.id+'\')"><span class="dot" style="background:'+color+'"></span>'+
+      '<div><div class="nm">'+esc(c.equipment||'Trouble call')+' — '+esc(c.complaint.reported||'')+'</div>'+
+      '<div class="meta">'+st+' · '+fmtDate(c.updated||c.created)+'</div></div><div class="chev">›</div></div>';
+  }).join('');
+  view().innerHTML=
+    '<div class="switcher"><button class="iconbtn" onclick="renderModeSelect()">\u2194 Switch mode</button></div>'+
+    whoBar()+
+    '<button class="btn accent" onclick="startCall()">+ New Trouble Call</button>'+
+    '<div class="surveys"><div class="slist-h"><span>Recent Calls</span><em>'+list.length+'</em></div>'+rows+'</div>';
+  window.scrollTo(0,0);
+}
+function renderProfile(){
+  $('#nav').style.display='block'; const p=techProfile;
+  const levelChips=['novice','mid','senior','master'].map(l=>'<span class="chip '+(p.level===l?'on':'')+'" onclick="setProf(\'level\',\''+l+'\')">'+l+'</span>').join('');
+  const epaChips=['II','Universal'].map(e=>'<span class="chip '+(p.epaType===e?'on':'')+'" onclick="setProf(\'epaType\',\''+e+'\')">EPA '+e+'</span>').join('');
+  const gateChips=ALL_GATES.map(g=>'<span class="chip '+(p.gates.includes(g.code)?'on':'')+'" onclick="toggleGate(\''+g.code+'\')">'+esc(g.label)+'</span>').join('');
+  view().innerHTML=
+    '<div class="stepcap">Technician profile</div><div class="steph">Who is working?</div>'+
+    '<div class="note">In production this is <b>admin-controlled</b> — a tech cannot grant their own credentials. Editable here for setup/testing.</div>'+
+    '<div class="field"><label>Name</label><input type="text" value="'+esc(p.name)+'" oninput="setProf(\'name\',this.value)"></div>'+
+    '<div class="field"><label>Tech ID</label><input type="text" value="'+esc(p.techId)+'" oninput="setProf(\'techId\',this.value)"></div>'+
+    '<div class="field"><label>Experience level</label><div class="chips">'+levelChips+'</div></div>'+
+    '<div class="field"><label>EPA 608</label><div class="chips">'+epaChips+'</div></div>'+
+    '<div class="field"><label>EPA cert # <span class="hint">— stamped on refrigerant work</span></label><input type="text" value="'+esc(p.epaCert)+'" oninput="setProf(\'epaCert\',this.value)"></div>'+
+    '<div class="field"><label>Skill gates held</label><div class="chips">'+gateChips+'</div></div>'+
+    '<div class="field"><label>Conditional-stop override</label><div class="chips"><span class="chip '+(p.conditionalOverride?'on':'')+'" onclick="setProf(\'conditionalOverride\',true)">Granted</span><span class="chip '+(!p.conditionalOverride?'on':'')+'" onclick="setProf(\'conditionalOverride\',false)">None</span></div></div>';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="renderTechHome()">‹ Back</button><button class="btn accent" onclick="saveProfDone()">Save</button>';
+  window.scrollTo(0,0);
+}
+function setProf(k,v){ techProfile[k]=v; if(k==='level'||k==='epaType'||k==='conditionalOverride')renderProfile(); }
+function toggleGate(code){ const i=techProfile.gates.indexOf(code); if(i>=0)techProfile.gates.splice(i,1); else techProfile.gates.push(code); renderProfile(); }
+async function saveProfDone(){ await saveTechProfile(); toast('Profile saved'); renderTechHome(); }
+
+/* ============================== TECH: CALL FLOW ============================== */
+function newCall(){ return {id:'C'+Date.now().toString(36).toUpperCase(),created:Date.now(),updated:Date.now(),status:'open',
+  techId:techProfile.techId, equipment:'',jobType:'',components:[],extrasAsked:false,
+  complaint:{reported:'',confirmed:''},trail:[],diagnosis:null,repair:null,escalation:null,verify:null,_current:null,_stepDraft:null}; }
+function startCall(){ currentCall=newCall(); techApiImages={}; renderEquipment(); }
+function openCall(id){ currentCall=techCalls.find(c=>c.id===id); if(!currentCall)return; techApiImages={};
+  if(currentCall.status==='closed'||currentCall.escalation)renderDone();
+  else if(currentCall._current||currentCall.trail.length)renderDiagnose();
+  else if(currentCall.components.length||currentCall.complaint.confirmed)renderComponents();
+  else if(currentCall.equipment)renderComplaint();
+  else renderEquipment(); }
+
+function renderEquipment(){
+  $('#nav').style.display='block';
+  view().innerHTML='<div class="stepcap">New trouble call · Step 1</div><div class="steph">What are you here to service?</div>'+
+    '<div class="eqgrid">'+TECH_EQUIP.map(e=>'<div class="eqtile '+(currentCall.equipment===e.name?'on':'')+'" onclick="pickEquip(\''+e.key+'\')"><div class="nm">'+esc(e.name)+'</div><div class="sub" style="font-size:10px;color:var(--muted);margin-top:4px">'+esc(e.jobType)+'</div></div>').join('')+'</div>';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="renderTechHome()">Exit</button><button class="btn accent" onclick="afterEquip()">Next →</button>';
+  window.scrollTo(0,0);
+}
+function pickEquip(key){ const e=TECH_EQUIP.find(x=>x.key===key); currentCall.equipment=e.name; currentCall.jobType=e.jobType; currentCall._eqKey=key; renderEquipment(); }
+function afterEquip(){ if(!currentCall.equipment){ toast('Pick the equipment'); return; } saveTechCall(); renderComplaint(); }
+
+function renderComplaint(){
+  $('#nav').style.display='block'; const c=currentCall;
+  const conf=['Confirmed','Could not reproduce','Different problem found'].map(o=>'<span class="chip '+(c.complaint.confirmed===o?'on':'')+'" onclick="setConfirm(\''+o+'\')">'+o+'</span>').join('');
+  view().innerHTML='<div class="stepcap">'+esc(c.equipment)+' · Step 2</div><div class="steph">The complaint</div>'+
+    '<div class="field"><label>What the customer reported *</label><input type="text" value="'+esc(c.complaint.reported)+'" placeholder="e.g. No heat" oninput="currentCall.complaint.reported=this.value"></div>'+
+    '<div class="field"><label>On arrival, the tech finds *</label><div class="chips">'+conf+'</div></div>'+
+    '<div class="note">Recording the reported complaint and your on-site finding separately protects you and the company — and a complaint you can\u2019t reproduce is a different job than one you confirm.</div>';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="renderEquipment()">Back</button><button class="btn accent" onclick="afterComplaint()">Next →</button>';
+  window.scrollTo(0,0);
+}
+function setConfirm(o){ currentCall.complaint.confirmed=o; renderComplaint(); }
+function afterComplaint(){ const c=currentCall; if(!c.complaint.reported||!c.complaint.confirmed){ toast('Fill both fields'); return; }
+  if(!c.components.length){ const e=TECH_EQUIP.find(x=>x.key===c._eqKey); (e?e.components:[]).forEach(n=>c.components.push({id:'K'+Math.random().toString(36).slice(2,7),name:n,photos:[]})); }
+  saveTechCall(); renderComponents(); }
+
+function renderComponents(){
+  $('#nav').style.display='block'; const c=currentCall;
+  const rows=c.components.map(comp=>{ const done=comp.brand||comp.model||comp.serial||(comp.photos&&comp.photos.length);
+    const meta=[comp.brand,comp.model,comp.serial?'SN '+comp.serial:''].filter(Boolean).join(' · ')||'tap to capture';
+    return '<div class="comp '+(done?'done':'')+'" onclick="editComp(\''+comp.id+'\')"><div><div class="nm">'+esc(comp.name)+'</div><div class="mt">'+esc(meta)+'</div></div><div class="cv">›</div></div>';
+  }).join('');
+  view().innerHTML='<div class="stepcap">'+esc(c.equipment)+' · Step 3</div><div class="steph">Capture the system</div>'+
+    '<p style="color:var(--muted);font-size:12px;margin:-6px 2px 12px">Photograph each component\u2019s nameplate. The AI reads the make/model/serial.</p>'+
+    rows+
+    '<div class="comp" style="border-left-color:var(--cool);cursor:pointer" onclick="addExtra()"><div><div class="nm" style="color:var(--cool-dk)">+ Other component</div><div class="mt">zoning, humidifier, secondary unit…</div></div></div>';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="renderComplaint()">Back</button><button class="btn accent" onclick="afterComponents()">Start diagnosis →</button>';
+  window.scrollTo(0,0);
+}
+function addExtra(){ const c=currentCall; const comp={id:'K'+Math.random().toString(36).slice(2,7),name:'Other component',photos:[],extra:true}; c.components.push(comp); editComp(comp.id); }
+function afterComponents(){ saveTechCall(); enterDiagnosis(); }
+
+function getComp(id){ return currentCall.components.find(c=>c.id===id); }
+function renderCompEdit(id){ currentCall._editComp=id; const comp=getComp(id); if(!comp)return renderComponents();
+  $('#nav').style.display='block';
+  const photos=(comp.photos||[]).map((p,i)=>'<div class="thumbx"><img class="thumb" src="'+p+'"><button onclick="rmCompPhoto(\''+id+'\','+i+')">×</button></div>').join('');
+  const has=(techApiImages['c:'+id]||[]).length>0;
+  let ai='';
+  if(comp._aiStatus==='analyzing')ai='<div class="ai-panel"><div class="ah"><span class="spinner"></span> Reading nameplate…</div></div>';
+  else if(comp._aiStatus==='error')ai='<div class="ai-panel" style="border-color:var(--accent);background:#fdf2ef"><div class="ah" style="color:var(--accent-dk)">Couldn\u2019t read it</div><div class="reason">Enter manually. ('+esc(comp._aiErr||'')+')</div></div>';
+  else if(comp._ai){ const a=comp._ai; ai='<div class="ai-panel"><div class="ah">AI read · verify<span class="conf '+(a.confidence||'low')+'">'+esc(a.confidence||'')+'</span></div><div class="reason">'+(a.dateReasoning?'<b>Date:</b> '+esc(a.dateReasoning):esc(a.readNotes||''))+'</div></div>'; }
+  view().innerHTML='<div class="stepcap">'+esc(currentCall.equipment)+' · component</div><div class="steph">'+esc(comp.name)+'</div>'+
+    (comp.extra?'<div class="field"><label>Component name</label><input type="text" value="'+esc(comp.name)+'" oninput="getComp(\''+id+'\').name=this.value"></div>':'')+
+    '<div class="syshdr">Nameplate Photos</div><div class="photo-row">'+photos+'<label class="addphoto">+<input type="file" accept="image/*" multiple onchange="compPhotos(\''+id+'\',this.files)"></label></div>'+
+    '<button class="btn cool sm" style="width:100%" onclick="readComp(\''+id+'\')" '+(has?'':'disabled')+'>'+(has?'⌁ Read with AI':'Add a photo to enable AI')+'</button>'+ai+
+    '<div class="syshdr">Details</div>'+
+    '<div class="field"><label>Brand</label><input type="text" value="'+esc(comp.brand||'')+'" oninput="getComp(\''+id+'\').brand=this.value"></div>'+
+    '<div class="field"><label>Model #</label><input type="text" value="'+esc(comp.model||'')+'" oninput="getComp(\''+id+'\').model=this.value"></div>'+
+    '<div class="field"><label>Serial #</label><input type="text" value="'+esc(comp.serial||'')+'" oninput="getComp(\''+id+'\').serial=this.value"></div>';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="doneComp()">‹ Components</button><button class="btn accent" onclick="doneComp()">Save</button>';
+  window.scrollTo(0,0);
+}
+function editComp(id){ renderCompEdit(id); }
+function doneComp(){ saveTechCall(); renderComponents(); }
+async function compPhotos(id,files){ const comp=getComp(id); await techPhotos('c:'+id,comp.photos,files,()=>renderCompEdit(id)); }
+function rmCompPhoto(id,i){ const comp=getComp(id); comp.photos.splice(i,1); if(techApiImages['c:'+id])techApiImages['c:'+id].splice(i,1); saveTechCall(); renderCompEdit(id); }
+async function readComp(id){ const comp=getComp(id); const imgs=techApiImages['c:'+id]||[]; if(!imgs.length){ toast('Add a photo first'); return; }
+  comp._aiStatus='analyzing'; renderCompEdit(id);
+  try{ const p=await callBackend('nameplate',{images:imgs.map(x=>({base64:x.base64,mediaType:x.mediaType}))});
+    if(p.brand&&!comp.brand)comp.brand=p.brand; if(p.model&&!comp.model)comp.model=p.model; if(p.serial&&!comp.serial)comp.serial=p.serial;
+    comp._ai=p; comp._aiStatus='done';
+  }catch(e){ comp._aiStatus='error'; comp._aiErr=String((e&&e.message)||e); }
+  saveTechCall(); renderCompEdit(id);
+}
+
+/* shared multi-photo helper for tech */
+async function techPhotos(bucket,arr,fileList,rerender){
+  const files=Array.from(fileList).slice(0,6);
+  for(const f of files){ if(!f.type.startsWith('image/'))continue;
+    try{ const th=await resizeImage(f,200,0.55); const big=await resizeImage(f,1100,0.7);
+      arr.push(th.dataUrl); techApiImages[bucket]=techApiImages[bucket]||[]; techApiImages[bucket].push({base64:big.base64,mediaType:big.mediaType});
+    }catch(e){ toast('Photo error'); }
+  }
+  saveTechCall(); rerender();
+}
+
+/* ============================== TECH: DIAGNOSTIC LOOP ============================== */
+function diagPayload(extraImages){
+  const c=currentCall;
+  return { action:'diagnose', equipment:c.equipment, jobType:c.jobType,
+    complaint:c.complaint,
+    components:c.components.map(x=>({name:x.name,brand:x.brand||'',model:x.model||'',serial:x.serial||''})),
+    trail:c.trail.map(t=>({step:t.title,value:t.value,unit:t.unit||''})),
+    tech:{level:techProfile.level,epaType:techProfile.epaType,gates:techProfile.gates,conditionalOverride:techProfile.conditionalOverride},
+    images:extraImages||[] };
+}
+function enforce(res){
+  const c=currentCall;
+  if(res.kind==='step'&&res.step&&res.step.requiresGate&&!hasGate(res.step.requiresGate)){
+    c.escalation={reason:'Next step requires '+res.step.requiresGate+': '+res.step.title,at:res.step.title}; res.kind='escalate';
+  }
+  if(res.kind==='diagnosis'&&res.repair&&res.repair.requiresGate&&!hasGate(res.repair.requiresGate)) res.repair._blocked=true;
+  if(res.kind==='hardstop'&&res.hardstop) res.hardstop._canClear=(res.hardstop.type==='conditional'&&canClearStop(res.hardstop));
+  return res;
+}
+async function enterDiagnosis(){
+  const c=currentCall; c._busy=true; renderDiagnose();
+  try{ const r=await callBackend('diagnose',diagPayload()); c._current=enforce(r); }
+  catch(e){ c._current={kind:'error',message:String((e&&e.message)||e)}; }
+  c._busy=false; saveTechCall(); renderDiagnose();
+}
+function renderDiagnose(){
+  $('#nav').style.display='block'; const c=currentCall; const cur=c._current;
+  let trailHTML=''; if(c.trail.length) trailHTML='<div class="trail">'+c.trail.map(t=>'<div class="trailitem"><span>'+esc(t.title)+'</span><span class="v">'+esc(t.value)+(t.unit?' '+esc(t.unit):'')+'</span></div>').join('')+'</div>';
+  let body='';
+  if(c._busy){ body='<div class="stepcard"><div class="st"><span class="spinner"></span> Thinking through the next step…</div></div>'; }
+  else if(!cur){ body='<div class="stepcard"><div class="how">Starting diagnosis…</div></div>'; }
+  else if(cur.kind==='error'){ body='<div class="stopcard"><div class="sh">Connection issue</div><div class="reason">'+esc(cur.message)+'</div><div class="act">Check the backend, then retry.</div></div><button class="btn accent" onclick="enterDiagnosis()">Retry</button>'; }
+  else if(cur.kind==='step'){ const s=cur.step; if(!c._stepDraft)c._stepDraft={value:'',note:'',photos:[]};
+    body='<button class="danger-btn" onclick="manualDanger()">⚠ I see something dangerous — stop</button>'+
+      '<div class="stepcard"><div class="st">'+esc(s.title)+'</div><div class="how">'+esc(s.how||'')+'</div>'+
+      (s.inlineCaution?'<div class="caution"><b>Caution:</b> '+esc(s.inlineCaution)+'</div>':'')+
+      '<div class="field"><label>Measured value'+(s.expects&&s.expects.unit?' ('+esc(s.expects.unit)+')':'')+'</label><input type="text" value="'+esc(c._stepDraft.value)+'" placeholder="Enter what you read" oninput="currentCall._stepDraft.value=this.value"></div>'+
+      '<div class="field"><label>Photos <span class="hint">— optional, for the record &amp; support</span></label><div class="photo-row">'+
+        (c._stepDraft.photos||[]).map((p,i)=>'<div class="thumbx"><img class="thumb" src="'+p+'"><button onclick="rmStepPhoto('+i+')">×</button></div>').join('')+
+        '<label class="addphoto">+<input type="file" accept="image/*" multiple onchange="stepPhotos(this.files)"></label></div></div>'+
+      '<div class="field"><label>Note <span class="hint">— optional</span></label><input type="text" value="'+esc(c._stepDraft.note)+'" oninput="currentCall._stepDraft.note=this.value"></div>'+
+      '<button class="btn accent" style="width:100%" onclick="submitReading()">Submit reading →</button></div>';
+  }
+  else if(cur.kind==='hardstop'){ const h=cur.hardstop;
+    body='<div class="stopcard"><div class="sh">⛔ Stop</div><div class="reason">'+esc(h.message||'')+'</div><div class="act">'+esc(h.action||'Make the area safe and escalate.')+'</div></div>';
+    if(h._canClear) body+='<div class="note">You hold the credentials to proceed past this conditional stop. Proceeding is logged to the job.</div><button class="btn accent" onclick="ackStop()">Acknowledge &amp; proceed</button><button class="btn ghost sm" style="width:100%;margin-top:8px" onclick="escalateCall(\'Hard stop\')">Escalate instead</button>';
+    else body+='<button class="btn accent" onclick="escalateCall(\'Hard stop: '+esc((h.message||'').slice(0,40))+'\')">Log &amp; escalate</button>';
+  }
+  else if(cur.kind==='escalate'){ body='<div class="stopcard"><div class="sh">Beyond your scope</div><div class="reason">'+esc(c.escalation?c.escalation.reason:'Requires a credential you don\u2019t hold.')+'</div><div class="act">Everything you confirmed is saved. Hand off to a qualified tech.</div></div><button class="btn accent" onclick="escalateCall(currentCall.escalation&&currentCall.escalation.reason)">Log &amp; escalate</button>'; }
+  else if(cur.kind==='diagnosis'){ const r=cur.repair||{};
+    body='<div class="diagcard"><div class="dh">Likely diagnosis</div><div class="dx">'+esc(cur.diagnosis||'')+'</div></div>';
+    if(r._blocked){ body+='<div class="stopcard"><div class="sh">Repair gated</div><div class="reason">This repair requires <b>'+esc(r.requiresGate)+'</b>, which isn\u2019t on your profile.</div><div class="act">Diagnosis is saved — escalate for the repair.</div></div><button class="btn accent" onclick="escalateCall(\'Repair requires '+esc(r.requiresGate)+'\')">Log &amp; escalate</button>'; }
+    else { body+='<div class="syshdr">Guided repair</div>'+((r.steps||[]).map((st,i)=>'<div class="trailitem"><span><b>'+(i+1)+'.</b> '+esc(st)+'</span></div>').join('')||'<div class="note">No repair steps returned.</div>')+
+      (r.inlineCaution?'<div class="caution"><b>Caution:</b> '+esc(r.inlineCaution)+'</div>':'')+
+      '<button class="btn accent" style="width:100%;margin-top:10px" onclick="renderVerify()">Repair done — verify →</button>'; }
+  }
+  view().innerHTML='<div class="stepcap">'+esc(c.equipment)+' · '+esc(c.complaint.reported||'')+' · diagnosis</div>'+trailHTML+body;
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="renderComponents()">‹ System</button><button class="btn ghost" onclick="exitCall()">Save &amp; exit</button>';
+  window.scrollTo(0,0);
+}
+async function stepPhotos(files){ await techPhotos('step:draft',currentCall._stepDraft.photos,files,()=>renderDiagnose()); }
+function rmStepPhoto(i){ currentCall._stepDraft.photos.splice(i,1); if(techApiImages['step:draft'])techApiImages['step:draft'].splice(i,1); renderDiagnose(); }
+async function submitReading(){
+  const c=currentCall; const d=c._stepDraft; const s=c._current.step;
+  if(!d.value){ toast('Enter the measured value'); return; }
+  c.trail.push({title:s.title,value:d.value,unit:(s.expects&&s.expects.unit)||'',note:d.note,photos:d.photos.slice(),time:Date.now()});
+  const imgs=(techApiImages['step:draft']||[]).map(x=>({base64:x.base64,mediaType:x.mediaType}));
+  techApiImages['step:draft']=[]; c._stepDraft=null; c._busy=true; saveTechCall(); renderDiagnose();
+  try{ const r=await callBackend('diagnose',diagPayload(imgs)); c._current=enforce(r); }
+  catch(e){ c._current={kind:'error',message:String((e&&e.message)||e)}; }
+  c._busy=false; saveTechCall(); renderDiagnose();
+}
+function manualDanger(){ currentCall._current={kind:'hardstop',hardstop:{type:'universal',message:'You flagged a potential danger.',action:'Stop work, make the area safe (shut off power/gas as appropriate), and escalate to a supervisor.'}}; saveTechCall(); renderDiagnose(); }
+function ackStop(){ const c=currentCall; c.acks=c.acks||[]; c.acks.push({item:c._current.hardstop.message,by:techProfile.techId,level:techProfile.level,time:Date.now()});
+  toast('Acknowledged & logged'); c._current=null; c.trail.push({title:'Override acknowledged',value:'proceeded',unit:''}); enterDiagnosis(); }
+function escalateCall(reason){ const c=currentCall; c.escalation=c.escalation||{reason:reason||'Escalated'}; c.status='escalated'; saveTechCall(); renderDone(); }
+
+function renderVerify(){
+  $('#nav').style.display='block'; const c=currentCall; if(!c.verify)c.verify={result:'',reading:'',photos:[]};
+  view().innerHTML='<div class="stepcap">'+esc(c.equipment)+' · verify</div><div class="steph">Confirm the fix</div>'+
+    '<div class="field"><label>Re-check original complaint — result *</label><input type="text" value="'+esc(c.verify.result)+'" placeholder="e.g. Heat confirmed at registers" oninput="currentCall.verify.result=this.value"></div>'+
+    '<div class="field"><label>Confirming reading</label><input type="text" value="'+esc(c.verify.reading)+'" placeholder="e.g. 120°F supply" oninput="currentCall.verify.reading=this.value"></div>'+
+    '<div class="field"><label>Photos</label><div class="photo-row">'+(c.verify.photos||[]).map((p,i)=>'<div class="thumbx"><img class="thumb" src="'+p+'"><button onclick="rmVerPhoto('+i+')">×</button></div>').join('')+'<label class="addphoto">+<input type="file" accept="image/*" multiple onchange="verPhotos(this.files)"></label></div></div>';
+  $('#navInner').innerHTML='<button class="btn ghost back" onclick="renderDiagnose()">Back</button><button class="btn accent" onclick="closeCall()">Close job</button>';
+  window.scrollTo(0,0);
+}
+async function verPhotos(files){ await techPhotos('verify',currentCall.verify.photos,files,()=>renderVerify()); }
+function rmVerPhoto(i){ currentCall.verify.photos.splice(i,1); renderVerify(); }
+function closeCall(){ const c=currentCall; if(!c.verify.result){ toast('Note the verification result'); return; } if(c._current&&c._current.diagnosis)c.diagnosis=c._current.diagnosis; c.status='closed'; saveTechCall(); renderDone(); }
+function exitCall(){ saveTechCall(); renderTechHome(); }
+
+function renderDone(){
+  $('#nav').style.display='block'; const c=currentCall;
+  const stampGates=[...new Set(c.trail.filter(()=>false))]; // placeholder
+  const closed=c.status==='closed';
+  view().innerHTML='<div class="stepcap">'+esc(c.equipment)+' · '+(closed?'closed':'escalated')+'</div>'+
+    '<div class="steph">'+(closed?'Job complete':'Escalated')+'</div>'+
+    '<div class="'+(closed?'diagcard':'stopcard')+'"><div class="'+(closed?'dh':'sh')+'">'+(closed?'Diagnosis':'Reason')+'</div><div class="'+(closed?'dx':'reason')+'">'+esc(closed?(c.diagnosis|| (c._current&&c._current.diagnosis)||'See trail'):(c.escalation&&c.escalation.reason||''))+'</div></div>'+
+    '<div class="syshdr">Job record</div>'+
+    '<div class="trailitem"><span>Tech</span><span class="v">'+esc(c.techId)+'</span></div>'+
+    '<div class="trailitem"><span>EPA cert</span><span class="v">'+esc(techProfile.epaCert||'—')+'</span></div>'+
+    '<div class="trailitem"><span>Complaint</span><span class="v">'+esc(c.complaint.reported)+' / '+esc(c.complaint.confirmed)+'</span></div>'+
+    (c.verify&&c.verify.result?'<div class="trailitem"><span>Verified</span><span class="v">'+esc(c.verify.result)+'</span></div>':'')+
+    '<button class="btn ghost sm" style="width:100%;margin-top:12px" onclick="copyCall()">Copy job summary</button>';
+  $('#navInner').innerHTML='<button class="btn accent" onclick="renderTechHome()">Done</button>';
+  window.scrollTo(0,0);
+}
+function copyCall(){ const c=currentCall;
+  const lines=['FIELD ENGINEER — SERVICE CALL','Tech: '+c.techId+'  EPA#: '+(techProfile.epaCert||'—'),
+    'Equipment: '+c.equipment,'Reported: '+c.complaint.reported,'On arrival: '+c.complaint.confirmed,'',
+    'Components:'].concat(c.components.map(x=>'  - '+x.name+': '+[x.brand,x.model,x.serial].filter(Boolean).join(' ')))
+    .concat(['','Diagnostic readings:']).concat(c.trail.map(t=>'  - '+t.title+': '+t.value+(t.unit?' '+t.unit:'')))
+    .concat(['',c.status==='closed'?('Diagnosis: '+(c.diagnosis||(c._current&&c._current.diagnosis)||'')):('ESCALATED: '+(c.escalation&&c.escalation.reason||''))]);
+  if(c.verify&&c.verify.result)lines.push('Verified: '+c.verify.result+(c.verify.reading?' ('+c.verify.reading+')':''));
+  const txt=lines.join('\n');
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast('Copied')).catch(()=>toast('Copy failed')); else toast('Clipboard unavailable');
+}
+
 /* ============================== BOOT ============================== */
-(async function(){ await loadSurveys(); await loadBackend(); renderHome(); })();
+(async function(){ await loadSurveys(); await loadBackend(); await loadTech(); renderModeSelect(); })();
 </script>
