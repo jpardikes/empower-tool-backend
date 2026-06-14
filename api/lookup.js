@@ -192,7 +192,7 @@ async function anthropic(payload){
       'x-api-key': ANTHROPIC_KEY,
       'anthropic-version': '2023-06-01'
     },
-    body: JSON.stringify(Object.assign({ model: 'claude-sonnet-4-20250514' }, payload))
+    body: JSON.stringify(Object.assign({ model: 'claude-sonnet-4-6' }, payload))
   });
   const raw = await r.text();
   let data; try { data = JSON.parse(raw); } catch (e) { throw new Error('Anthropic non-JSON (' + r.status + '): ' + raw.slice(0, 160)); }
