@@ -45,6 +45,7 @@ export default async function handler(req, res){
     if (action === 'nameplate') { res.status(200).json(await getNameplate(body)); return; }
     if (action === 'rebates')   { res.status(200).json(await getRebates(body));   return; }
     if (action === 'diagnose')  { res.status(200).json(await getDiagnose(body)); return; }
+    if (action === 'parseprices'){ res.status(200).json(await getParsePrices(body)); return; }
     res.status(400).json({ error: 'Unknown action: ' + action });
   } catch (e) {
     res.status(500).json({ error: String((e && e.message) || e) });
@@ -130,6 +131,25 @@ async function getRebates(body){
   let arr = parseJSON(text);
   if (!Array.isArray(arr)) arr = (arr && Array.isArray(arr.programs)) ? arr.programs : [];
   return { programs: arr };
+}
+
+// ---------------------------------------------------------------- PARSE PRICES
+const PRICE_PROMPT =
+'You are extracting line items from a wholesale distributor document (an invoice, order confirmation, quote, or a price screen) for an HVAC contractor. ' +
+'Pull every product line you can read. Respond with ONLY a JSON object (no markdown): {"items":[{"sku":string|null,"description":string,"cost":number|null,"uom":string|null,"vendor":string|null}]}. ' +
+'cost = the contractor\'s unit net price/cost for that line as a number (no currency symbol). If a line shows extended/total price and a quantity, report the UNIT cost. ' +
+'Use null for any field you cannot read; skip tax, freight, and subtotal lines. Identify the vendor (e.g., Johnstone, Ferguson) if shown. Do not invent SKUs or prices.';
+
+async function getParsePrices(body){
+  if (!ANTHROPIC_KEY) throw new Error('ANTHROPIC_API_KEY not set on server');
+  const images = Array.isArray(body.images) ? body.images : [];
+  const text = (body.text || '').trim();
+  if (!images.length && !text) throw new Error('provide an image or text');
+  const content = [];
+  images.slice(0, 4).forEach(p => content.push({ type: 'image', source: { type: 'base64', media_type: p.mediaType || 'image/jpeg', data: p.base64 } }));
+  content.push({ type: 'text', text: PRICE_PROMPT + (text ? '\n\nPASTED TEXT:\n' + text : '') + '\n\nReturn the JSON now.' });
+  const out = parseJSON(await anthropic({ max_tokens: 1500, messages: [{ role: 'user', content }] }));
+  return { items: Array.isArray(out) ? out : (out.items || []) };
 }
 
 // ---------------------------------------------------------------- DIAGNOSE
